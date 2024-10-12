@@ -2,7 +2,6 @@ import Accordion from "../components/Accordion";
 
 const Cart = () => {
 
-  console.log(currentRestaurant?.data?.cards?.[0]?.card?.card?.info);
   const addressManager = <>
     <h1>This is the address manager</h1></>;
   const offerSelector = <>
@@ -22,7 +21,7 @@ const Cart = () => {
   return (
     <>
       <h2 className="text-4xl font-bold">The Cart Page</h2>
-      <div className="cartContainer m-[0.3rem] p-[0.3rem] border-black border-2 rounded-[3px]">
+      {/* <div className="cartContainer m-[0.3rem] p-[0.3rem] border-black border-2 rounded-[3px]">
         <div className="cartSummary border-2 border-black my-[0.3rem] p-[0.3rem]  rounded-[3px]">
           <div className="restaurantDetails flex justify-between text-xl font-bold">
             <div className="restaurantName">{currentRestaurant?.data?.cards?.[0]?.card?.card?.info?.name}</div>
@@ -54,7 +53,7 @@ const Cart = () => {
             <Accordion title="Complete Your Payment" content={paymentSelector} />
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   )
 }

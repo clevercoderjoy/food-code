@@ -4,6 +4,8 @@ import Home from "../pages/Home";
 import Restaurants from "../pages/Restaurants";
 import RestaurantMenu from "../pages/RestaurantMenu";
 import Error from "../pages/Error";
+import About from "../pages/About";
+import Cart from "../pages/Cart";
 
 export const router = createBrowserRouter([
   {
@@ -26,6 +28,14 @@ export const router = createBrowserRouter([
             element: <RestaurantMenu />
           }
         ]
+      },
+      {
+        path: "about",
+        element: <About />
+      },
+      {
+        path: "cart",
+        element: <Cart />,
       },
       {
         path: "*",
