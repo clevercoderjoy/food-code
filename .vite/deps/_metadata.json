@@ -1,0 +1,29 @@
+{
+  "hash": "8311aeaf",
+  "browserHash": "da0b6113",
+  "optimized": {
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "fcc60359",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "299a6c70",
+      "needsInterop": true
+    },
+    "react-shimmer-effects": {
+      "src": "../../node_modules/react-shimmer-effects/dist/index.es.js",
+      "file": "react-shimmer-effects.js",
+      "fileHash": "53328e7c",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-UPDK7Z2H": {
+      "file": "chunk-UPDK7Z2H.js"
+    }
+  }
+}
