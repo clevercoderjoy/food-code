@@ -2,14 +2,12 @@ import { Link } from "react-router-dom";
 import { CDN_URL } from "../utils/constants";
 
 const RestaurantCard = ({ restaurant }) => {
-  // console.log("object", restaurant);
 
   const {
     cloudinaryImageId,
     cuisines,
     name,
     avgRating,
-    promoted,
     sla: { deliveryTime },
     costForTwo,
     aggregatedDiscountInfoV3,
@@ -30,11 +28,6 @@ const RestaurantCard = ({ restaurant }) => {
 
   return (
     <div className="restaurantContainer w-[240px] h-[375px] mt-4 mx-2 mb-4 rounded-lg border-2 border-black shadow-md transition-transform duration-200 ease-in-out relative hover:scale-105 cursor-pointer">
-      {promoted && (
-        <label className="absolute z-10 font-bold top-2 left-2 border-black rounded-tl-lg bg-black text-white py-1 px-2 text-xs">
-          Promoted
-        </label>
-      )}
       <div className="restaurantImgContainer m-auto text-center p-2">
         <img
           src={CDN_URL + cloudinaryImageId}
@@ -47,8 +40,16 @@ const RestaurantCard = ({ restaurant }) => {
           {name.length > 15 ? `${name.substring(0, 15)}...` : name}
         </div>
         <div className="restaurantFoodDetails flex justify-between items-center text-xs my-1">
-          <span className="ratings">{avgRating}⭐</span>
-          <span className="separator font-bold">|</span>
+          {
+            avgRating ? (
+              <div>
+                <span className="ratings">{avgRating}⭐</span>
+                <span className="separator font-bold">|</span>
+              </div>
+            )
+              :
+              <></>
+          }
           <span className="time">{deliveryTime} mins</span>
           <span className="separator font-bold">|</span>
           <span className="avgPrice">{costForTwo}</span>

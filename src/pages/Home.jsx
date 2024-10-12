@@ -27,7 +27,6 @@ const Home = () => {
         >
           Explore Restaurants
         </button>
-
       </div>
     </>
   )

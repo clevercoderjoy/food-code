@@ -21,6 +21,8 @@ const Restaurants = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const totalItems = Math.ceil(filteredRestaurants.length / itemsPerPage);
   const currentPageRestaurants = filteredRestaurants.slice(indexOfFirstItem, indexOfLastItem);
+  
+  console.log(currentPageRestaurants)
 
   return (
     <>
