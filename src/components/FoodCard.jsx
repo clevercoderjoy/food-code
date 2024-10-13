@@ -6,10 +6,10 @@ import Accordion from "./Accordion";
 
 const FoodCard = ({ foodItems, accordionOpen, onAccordionToggle }) => {
 
-  console.log("foodItems", foodItems?.data[2]);
+  console.log("foodItems", foodItems?.data[3]);
 
   const { areaName, avgRating, costForTwoMessage, city, cuisines, totalRatingsString, labels, name, } = foodItems?.data[2]?.card?.card?.info;
-  const { offers } = foodItems?.data[3]?.cards?.cards?.gridElements?.infoWithStyle;
+  const { offers } = foodItems?.data[3]?.card?.card?.gridElements?.infoWithStyle;
 
   const menuItems = foodItems?.data?.cards[2]?.groupedCard?.cardGroupMap?.REGULAR?.cards.filter((food) => food?.card?.card?.["@type"] === "type.googleapis.com/swiggy.presentation.food.v2.ItemCategory");
 
