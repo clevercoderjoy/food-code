@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { CDN_URL } from "../utils/constants";
 
 const RestaurantCard = ({ restaurant }) => {
@@ -6,12 +6,15 @@ const RestaurantCard = ({ restaurant }) => {
   const {
     cloudinaryImageId,
     cuisines,
+    id,
     name,
     avgRating,
     sla: { deliveryTime },
     costForTwo,
     aggregatedDiscountInfoV3,
   } = restaurant.info;
+
+  const navigate = useNavigate();
 
   const cuisinesWithDots = () => {
     let cuisine = "";
@@ -21,10 +24,13 @@ const RestaurantCard = ({ restaurant }) => {
     return cuisine + "...";
   };
 
-  const cuisine =
-    cuisines.length < 2
-      ? cuisines.map((cuisine) => `${cuisine} `)
-      : cuisinesWithDots();
+  const cuisine = cuisines.length < 2 ? cuisines.map((cuisine) => `${cuisine} `) : cuisinesWithDots();
+
+  const openRestaurantMenu = () => {
+    navigate(`/restaurants/${id}`, {
+      state: { restaurantMenu: restaurant?.cta }
+    })
+  }
 
   return (
     <div className="restaurantContainer w-[240px] h-[375px] mt-4 mx-2 mb-4 rounded-lg border-2 border-black shadow-md transition-transform duration-200 ease-in-out relative hover:scale-105 cursor-pointer">
@@ -64,10 +70,11 @@ const RestaurantCard = ({ restaurant }) => {
             : `${aggregatedDiscountInfoV3?.header || ""} ${aggregatedDiscountInfoV3?.subHeader || ""}`}
         </div>
       </div>
-      <button className="view text-center block cursor-pointer font-bold p-2 text-sm rounded-md tracking-wide border-black border-2 transition-all duration-100 ease-in-out absolute bottom-2 left-1/2 transform -translate-x-1/2 hover:uppercase">
-        <Link to={`/restaurants/${restaurant?.info?.id}`}>
-          Quick View
-        </Link>
+      <button
+        className="view text-center block cursor-pointer font-bold p-2 text-sm rounded-md tracking-wide border-black border-2 transition-all duration-100 ease-in-out absolute bottom-2 left-1/2 transform -translate-x-1/2 hover:uppercase"
+        onClick={openRestaurantMenu}
+      >
+        Quick View
       </button>
     </div>
   );

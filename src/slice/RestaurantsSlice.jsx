@@ -1,13 +1,21 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { restaurantsApi } from "../utils/constants";
+import { restaurantsDataApi } from "../utils/constants";
 import axios from "axios";
 
 export const fetchRestaurants = createAsyncThunk(
   "/restaurants/fetchRestaurants",
   async () => {
     try {
-      const response = await axios.get(restaurantsApi);
-      return response?.data[4]?.card?.card?.gridElements?.infoWithStyle?.restaurants || [];
+      const response = await axios.get(restaurantsDataApi);
+      const restaurantUrls = response?.data || [];
+
+      const restaurantData = await Promise.all(
+        restaurantUrls.map(async (restaurantObj) => {
+          const restaurantResponse = await axios.get(restaurantObj.url);
+          return restaurantResponse?.data || null;
+        })
+      );
+      return restaurantData.filter(Boolean);
     } catch (e) {
       console.error("Failed to fetch restaurants:", e);
       return [];

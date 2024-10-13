@@ -1,8 +1,12 @@
+import { useLocation } from "react-router-dom";
+
 const RestaurantPage = () => {
-  // const restaurantMenu = useRestaurantMenu();
+
+  const location = useLocation();
+  const { restaurantMenu } = location.state;
+  console.log(restaurantMenu);
 
   return (
-    // <FoodMapper menu={restaurantMenu} />
     <></>
   );
 }

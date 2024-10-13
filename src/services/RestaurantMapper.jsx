@@ -11,8 +11,8 @@ const RestaurantMapper = ({ restaurants }) => {
     <div className="container mx-auto py-8">
       <div className="restaurantCards flex flex-grow flex-wrap items-center justify-center">
         {restaurants?.length > 0 ? (
-          restaurants.map((restaurant) => (
-            <RestaurantCard key={restaurant?.info?.id} restaurant={restaurant} />
+          restaurants.map((restaurant, index) => (
+            <RestaurantCard key={index} restaurant={restaurant} />
           ))
         ) : (
           !restaurantsLoading && (
