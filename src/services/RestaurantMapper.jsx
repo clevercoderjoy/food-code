@@ -4,7 +4,7 @@ import ShimmerHome from "../components/shimmerHome";
 import { selectRestaurantsLoading } from "../slice/RestaurantsSlice";
 
 const RestaurantMapper = ({ restaurants }) => {
-  const shimmerCardCount = Array.from({ length: 10 }, () => "");
+  const shimmerCardCount = Array.from({ length: 12 }, () => "");
   const restaurantsLoading = useSelector(selectRestaurantsLoading);
 
   return (

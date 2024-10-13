@@ -1,8 +1,10 @@
 import React from 'react';
 
-const Pagination = ({ currentPage, setCurrentPage, totalItems }) => {
+const Pagination = ({ currentPage, setCurrentPage, totalItems, disableButtons }) => {
   const handleClick = (page) => {
-    setCurrentPage(page);
+    if (!disableButtons) {
+      setCurrentPage(page);
+    }
   };
 
   const pages = [...Array(totalItems).keys()].map(num => num + 1);

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { CDN_URL } from "../utils/constants";
+import { showEllipsis } from "../utils/helperFunctions";
 
 const RestaurantCard = ({ restaurant }) => {
 
@@ -24,7 +25,9 @@ const RestaurantCard = ({ restaurant }) => {
     return cuisine + "...";
   };
 
-  const cuisine = cuisines.length < 2 ? cuisines.map((cuisine) => `${cuisine} `) : cuisinesWithDots();
+  const cuisine = cuisines.length < 2
+    ? cuisines.map((cuisine) => `${cuisine} `).join("")
+    : showEllipsis(cuisines.join(" "), 2);
 
   const openRestaurantMenu = () => {
     navigate(`/restaurants/${id}`, {
