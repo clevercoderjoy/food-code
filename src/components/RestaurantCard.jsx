@@ -17,14 +17,6 @@ const RestaurantCard = ({ restaurant }) => {
 
   const navigate = useNavigate();
 
-  const cuisinesWithDots = () => {
-    let cuisine = "";
-    for (let i = 0; i < 2; i++) {
-      cuisine += " " + cuisines[i];
-    }
-    return cuisine + "...";
-  };
-
   const cuisine = cuisines.length < 2
     ? cuisines.map((cuisine) => `${cuisine} `).join("")
     : showEllipsis(cuisines.join(" "), 2);

@@ -1,23 +1,21 @@
-// import { useContext } from "react";
-import nonVegIcon from "../../../public/images/nonVegIcon.svg";
-import vegIcon from "../../../public/images/vegIcon.svg";
-// import { CartContext } from "../../main";
-import { dots, food_img_url } from "../utils/constants";
+import nonVegIcon from "../../public/images/nonVegIcon.svg";
+import vegIcon from "../../public/images/vegIcon.svg";
+import { food_img_url } from "../utils/constants";
 import Accordion from "./Accordion";
 
 
 const FoodCard = ({ foodItems, accordionOpen, onAccordionToggle }) => {
-  // const { getItemCount, handleAddClick } = useContext(CartContext);
+
+  console.log("foodItems", foodItems?.data[2]);
+
+  const { areaName, avgRating, costForTwoMessage, city, cuisines, totalRatingsString, labels, name, } = foodItems?.data[2]?.card?.card?.info;
+  const { offers } = foodItems?.data[3]?.cards?.cards?.gridElements?.infoWithStyle;
 
   const menuItems = foodItems?.data?.cards[2]?.groupedCard?.cardGroupMap?.REGULAR?.cards.filter((food) => food?.card?.card?.["@type"] === "type.googleapis.com/swiggy.presentation.food.v2.ItemCategory");
 
   const handleAccordionToggle = (index) => {
     onAccordionToggle(index);
   }
-  const isItemInCart = (itemId) => {
-    // return cartItems.some((item) => item.id === itemId);
-  }
-  // console.log("foodItems", foodItems?.data?.cards[0]?.card?.card?.info?.id);
 
   return (
     <>
@@ -25,21 +23,21 @@ const FoodCard = ({ foodItems, accordionOpen, onAccordionToggle }) => {
         <div className="resDetails border-2 border-black rounded-[3px] p-[0.3rem] flex items-center justify-between">
           <div className="resInfo flex flex-col text-left">
             <span className="resName text-[25px] font-bold">
-              {foodItems?.data?.cards[0]?.card?.card?.info?.name}
+              {name}
             </span>
             <span className="resCuisines text-lg">
               {foodItems?.data?.cards[0]?.card?.card?.info?.cuisines.join(", ")}
             </span>
             <span className="resArea text-base">
-              {foodItems?.data?.cards[0]?.card?.card?.info?.areaName}
+              {areaName}
             </span>
           </div>
           <div className="resRatings flex flex-col m-[0.3rem] border-[1.5px] border-black rounded-[3px] items-center p-[0.3rem] text-sm">
             <span className="starRatings py-2 px-[0.3rem]">
-              ⭐{foodItems?.data?.cards[0]?.card?.card?.info?.avgRating}
+              ⭐{avgRating}
             </span>
             <span className="totalRatings py-2 px-[0.3rem] border-t-[1.5px] border-black">
-              {foodItems?.data?.cards[0]?.card?.card?.info?.totalRatingsString}
+              {totalRatingsString}
             </span>
           </div>
         </div>
@@ -84,7 +82,7 @@ const FoodCard = ({ foodItems, accordionOpen, onAccordionToggle }) => {
                                     }
                                   </div>
                                 </div>
-                                <div className="foodDescription text-sm text-left">{description?.length > 300 ? (description.substring(0, 150) + dots) : description}</div>
+                                <div className="foodDescription text-sm text-left">{description?.length > 300 ? (description.substring(0, 150)) : description}</div>
                               </div>
                               <div className="img_add">
                                 <div className="foodImgContainer my-2 mx-auto">
