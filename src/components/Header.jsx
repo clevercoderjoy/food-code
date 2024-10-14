@@ -1,8 +1,11 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { selectCart } from "../slice/CartSlice";
 
 const Header = ({ cartItems }) => {
   const [isOptionsVisible, setOptionsVisible] = useState(false);
+  const cart = useSelector(selectCart);
   const showOptions = isOptionsVisible ? "visible" : "hidden";
 
   const authButtonClass = "loginButton text-center block border-black border-2 text-white font-bold py-[0.1rem] pl-[0.3rem] pr-[0.3rem] mr-1 transition-all duration-500 ease-in-out rounded-[3px] tracking-widest w-28 h-9";
@@ -32,6 +35,12 @@ const Header = ({ cartItems }) => {
     setOptionsVisible(false);
   };
 
+  const getTotalCartItems = () => {
+    let totalCartItems = 0;
+    cart.map((item) => totalCartItems += item.quantity)
+    return totalCartItems;
+  }
+
   return (
     <>
       <header className="headerContainer relative flex items-center justify-between m-[0.3rem] border-2 border-black rounded-[3px]">
@@ -56,9 +65,9 @@ const Header = ({ cartItems }) => {
                   About
                 </Link>
               </li>
-              <li className={listStyle}>
+              <li className={`${listStyle} ${getTotalCartItems() > 0 ? "font-bold" : ""}`}>
                 <Link to="/cart">
-                  Cart
+                  Cart({getTotalCartItems() || 0})
                   {cartItems.length === 0 ? "" : <span className="font-bold ml-1">({cartItems.length})</span>}
                 </Link>
               </li>

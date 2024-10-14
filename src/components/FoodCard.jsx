@@ -3,25 +3,50 @@ import nonVegIcon from "../../public/images/nonVegIcon.svg";
 import vegIcon from "../../public/images/vegIcon.svg";
 import { food_img_url } from "../utils/constants";
 import Accordion from "./Accordion";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart, deleteFromCart, removeFromCart, selectCart } from "../slice/CartSlice";
+import { useNavigate } from "react-router-dom";
+import { BadgeX } from "lucide-react";
 
 
 const FoodCard = ({ foodItems }) => {
 
   const [accordionOpen, setAccordionOpen] = useState(0);
+  const dispatch = useDispatch();
+  const cart = useSelector(selectCart);
+  const navigate = useNavigate();
 
-  const { areaName, avgRating, costForTwoMessage, city, cuisines, totalRatingsString, labels, name, } = foodItems?.data[2]?.card?.card?.info;
+  const { areaName, avgRating, costForTwoMessage, city, cuisines, totalRatingsString, labels, name, id } = foodItems?.data[2]?.card?.card?.info;
   const { offers } = foodItems?.data[3]?.card?.card?.gridElements?.infoWithStyle;
   const { cards } = foodItems?.data[4]?.groupedCard?.cardGroupMap?.REGULAR
-  console.log(cards.slice(2, cards.length));
 
   const menuItems = cards.slice(2, cards.length - 2);
   const handleAccordionToggle = (index) => {
     setAccordionOpen(accordionOpen === index ? null : index);
   };
 
+  const getItemCount = (food) => {
+    const itemInCart = cart.find((item) => item.id === food.id);
+    return itemInCart ? itemInCart.quantity : 0;
+  }
+
+  const getTotalCartItems = () => {
+    let totalCartItems = 0;
+    cart.map((item) => totalCartItems += item.quantity)
+    return totalCartItems;
+  }
+
+  console.log(cart)
+
   return (
     <>
       <div className="menuContainer my-2 mx-[0.3rem] p-[0.3rem] border-2 border-black rounded-[3px]">
+        {cart.length > 0 && (
+          <button className="viewCartButton fixed bottom-1 right-[11rem] py-[1rem] font-bold px-4 text-center text-lg font-bold bg-black text-white rounded cursor-pointer"
+            onClick={() => navigate("/cart")}>
+            View Cart ({getTotalCartItems()})
+          </button>
+        )}
         <div className="resDetails border-2 border-black rounded-[3px] p-[0.3rem] flex items-center justify-between">
           <div className="resInfo flex flex-col text-left">
             <span className="resName text-[25px] font-bold">
@@ -75,14 +100,14 @@ const FoodCard = ({ foodItems }) => {
             <div className="categorizedItems mx-auto mb-0 py-[0.3rem]" key={index}>
               <div className="categoryTitle flex justify-center flex-col border-2 border-black rounded-[3px] text-center text-[25px] font-bold mx-auto px-[0.3rem]">
                 <Accordion
-                  title={`${items?.card?.card?.title} (${items?.card?.card?.itemCards?.length || 0})`}
+                  title={`${items?.card?.card?.title} (${items?.card?.card?.itemCards?.length || items?.card?.card?.categories?.length})`}
                   content={
                     <div className="categoryItems">
-                      {items?.card?.card?.itemCards?.map((foodItem) => {
-                        const { id, name, price, defaultPrice, description, imageId, isVeg } = foodItem?.card?.info;
+                      {items?.card?.card?.itemCards?.map((foodItem, index) => {
+                        const { name, price, defaultPrice, description, imageId, isVeg } = foodItem?.card?.info;
                         return (
-                          <div className="foodItem border-2 rounded-[3px] mt-2 mx-auto p-[0.3rem] flex items-start justify-between" key={id}>
-                            <div className="foodDetails w-[100%] p-[0.1rem] my-2 mx-0">
+                          <div className="foodItem border-2 rounded-[3px] mt-2 mx-auto p-[0.3rem] flex items-start justify-between" key={index}>
+                            <div className="foodDetails w-full p-[0.1rem] my-2 mx-0">
                               <div className="foodName font-bold text-lg">{name}</div>
                               <div className="isVeg_price flex justify-between items-center">
                                 <div className="foodPrice text-xl text-center">
@@ -95,23 +120,30 @@ const FoodCard = ({ foodItems }) => {
                               </div>
                               <div className="foodDescription text-sm text-left">{description?.length > 300 ? (description.substring(0, 150)) : description}</div>
                             </div>
-                            <div className="img_add">
+                            <div className="img_add  flex flex-col items-center justify-center">
                               <div className="foodImgContainer my-2 mx-auto">
-                                <img className="foodImg h-[100px] w-[100px] rounded-[5px] border-2 border-black" src={
+                                <img className="foodImg h-[100px] w-[150px] rounded-[5px] border-2 border-black" src={
                                   imageId ? (food_img_url + imageId) : "https://www.pngkey.com/png/full/114-1144514_foodlogo-question-mark-food-question-mark-png.png"
                                 } alt="food image" />
                               </div>
-                              {/* {
-                                  itemInCart ? (
-                                    <div className="added flex items-center justify-between my-4 mx-auto cursor-pointer font-bold p-[0.3rem] text-base rounded-[3px] border-black border-2 transition-all duration-100 ease-in-out hover:bg-black hover:text-white">
-                                      <button className="minus tracking-[0.1rem] bg-transparent py-0 px-1">-</button>
-                                      <div className="count">{getItemCount(id)}</div>
-                                      <button className="plus tracking-[0.1rem] bg-transparent py-0 px-1" onClick={() => handleAddClick(item, foodItems)}>+</button>
+                              {
+                                getItemCount(foodItem?.card?.info) > 0 ? (
+                                  <div className="flex items-center justify-between w-full">
+                                    <BadgeX
+                                      className="h-[35px] w-[35px] rounded-full cursor-pointer mr-2"
+                                      onClick={() => dispatch(deleteFromCart(foodItem?.card?.info))}
+                                    />
+                                    <div className="added flex items-center justify-between my-4 w-full mx-auto cursor-pointer font-bold p-[0.3rem] text-base rounded-[3px] border-black border-2 transition-all duration-100 ease-in-out hover:bg-black hover:text-white cursor-pointer">
+                                      <button className="minus tracking-[0.1rem] bg-transparent py-0 px-1"
+                                        onClick={() => dispatch(removeFromCart(foodItem?.card?.info))}>-</button>
+                                      <div className="count font-bold">{getItemCount(foodItem?.card?.info)}</div>
+                                      <button className="plus tracking-[0.1rem] bg-transparent py-0 px-1 cursor-pointer" onClick={() => dispatch(addToCart({ resId: id, foodItem: foodItem?.card?.info }))}>+</button>
                                     </div>
-                                  ) : ( */}
-                              <button className="add text-center block my-4 mx-auto cursor-pointer font-bold py-[0.3rem] px-2 text-sm w-[100%] rounded-[3px] tracking-[0.1rem] transition-all duration-100 ease-in-out border-black border-2 hover:uppercase" onClick={() => handleAddClick(item, foodItems)}>Add</button>
-                              {/* )
-                                } */}
+                                  </div>
+                                ) : (
+                                  <button className="add text-center block my-4 mx-auto cursor-pointer font-bold py-[0.425rem] px-2 text-sm w-full rounded-[3px] tracking-[0.1rem] transition-all duration-100 ease-in-out border-black border-2 hover:uppercase" onClick={() => dispatch(addToCart({ resId: id, foodItem: foodItem?.card?.info }))}>Add</button>
+                                )
+                              }
                             </div>
                           </div>
                         );
