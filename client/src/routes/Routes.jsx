@@ -6,6 +6,7 @@ import Error from "../pages/Error";
 import About from "../pages/About";
 import Cart from "../pages/Cart";
 import RestaurantPage from "../pages/RestaurantPage";
+import Admin from "../pages/Admin";
 
 export const router = createBrowserRouter([
   {
@@ -36,6 +37,15 @@ export const router = createBrowserRouter([
       {
         path: "cart",
         element: <Cart />,
+      },
+      {
+        path: "admin",
+        children: [
+          {
+            index: true,
+            element: <Admin />
+          },
+        ]
       },
       {
         path: "*",
