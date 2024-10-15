@@ -1,6 +1,6 @@
 import { useState } from "react";
-import nonVegIcon from "../../public/images/nonVegIcon.svg";
-import vegIcon from "../../public/images/vegIcon.svg";
+import nonVegIcon from "/images/nonVegIcon.svg";
+import vegIcon from "/images/vegIcon.svg";
 import { food_img_url } from "../utils/constants";
 import Accordion from "./Accordion";
 import { useDispatch, useSelector } from "react-redux";

@@ -1,4 +1,4 @@
-import clevercoderjoy from "../../public/images/clevercoderjoy.jpg";
+import clevercoderjoy from "/images/clevercoderjoy.jpg";
 
 const About = () => {
   return (
