@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
 
-const restaurant = new mongoose.Schema({
+const restaurantSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -17,11 +17,7 @@ const restaurant = new mongoose.Schema({
     type: String,
     required: true,
   },
-  name: {
-    type: String,
-    required: true,
-  },
-  time: {
+  deliveryTime: {
     type: Number,
     required: true,
   },
@@ -33,6 +29,10 @@ const restaurant = new mongoose.Schema({
     type: String,
     required: true,
   },
+  area: {
+    type: String,
+    required: true,
+  },
   city: {
     type: String,
     required: true,
@@ -41,8 +41,16 @@ const restaurant = new mongoose.Schema({
     type: [String],
     required: true,
   },
-  offers: {
+  discount: {
     type: String,
     required: true,
   },
-})
+  restaurantMenu: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "RestaurantMenu",
+    }
+  ]
+}, { timestamps: true });
+
+export const RestaurantMenu = mongoose.model("RestaurantMenu", restaurantSchema);
