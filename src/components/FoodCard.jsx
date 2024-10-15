@@ -36,8 +36,6 @@ const FoodCard = ({ foodItems }) => {
     return totalCartItems;
   }
 
-  console.log(cart)
-
   return (
     <>
       <div className="menuContainer my-2 mx-[0.3rem] p-[0.3rem] border-2 border-black rounded-[3px]">
