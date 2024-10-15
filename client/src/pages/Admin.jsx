@@ -22,7 +22,6 @@ const Admin = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Restaurant Details Submitted: ", restaurantDetails);
-    // Here you would typically send restaurantDetails to your API
   };
 
   return (

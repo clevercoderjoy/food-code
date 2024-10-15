@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addToCart, deleteFromCart, removeFromCart, selectCart } from "../slice/CartSlice";
 import { useNavigate } from "react-router-dom";
 import { BadgeX } from "lucide-react";
+import { toast } from "react-toastify";
 
 
 const FoodCard = ({ foodItems }) => {
@@ -129,17 +130,40 @@ const FoodCard = ({ foodItems }) => {
                                   <div className="flex items-center justify-between w-full">
                                     <BadgeX
                                       className="h-[35px] w-[35px] rounded-full cursor-pointer mr-2"
-                                      onClick={() => dispatch(deleteFromCart(foodItem?.card?.info))}
+                                      onClick={() => {
+                                        dispatch(deleteFromCart(foodItem?.card?.info));
+                                        toast.error(`${foodItem?.card?.info?.name} has been deleted from cart!`);
+                                      }
+                                      }
                                     />
                                     <div className="added flex items-center justify-between my-4 w-full mx-auto cursor-pointer font-bold p-[0.3rem] text-base rounded-[3px] border-black border-2 transition-all duration-100 ease-in-out hover:bg-black hover:text-white cursor-pointer">
                                       <button className="minus tracking-[0.1rem] bg-transparent py-0 px-1"
-                                        onClick={() => dispatch(removeFromCart(foodItem?.card?.info))}>-</button>
+                                        onClick={() => {
+                                          dispatch(removeFromCart(foodItem?.card?.info))
+                                          toast.error(`${foodItem?.card?.info?.name} removed from cart!`);
+                                        }}>-</button>
                                       <div className="count font-bold">{getItemCount(foodItem?.card?.info)}</div>
-                                      <button className="plus tracking-[0.1rem] bg-transparent py-0 px-1 cursor-pointer" onClick={() => dispatch(addToCart({ resId: id, foodItem: foodItem?.card?.info }))}>+</button>
+                                      <button className="plus tracking-[0.1rem] bg-transparent py-0 px-1 cursor-pointer" onClick={() => {
+                                        const currentCount = getItemCount(foodItem?.card?.info);
+                                        if (currentCount < 3) {
+                                          dispatch(addToCart({ resId: id, foodItem: foodItem?.card?.info }));
+                                          toast.success(`${foodItem?.card?.info?.name} added to cart!`);
+                                        } else {
+                                          toast.warn(`Maximum limit reached! You can only add 3 ${foodItem?.card?.info?.name}s to the cart.`);
+                                        }
+                                      }}>+</button>
                                     </div>
                                   </div>
                                 ) : (
-                                  <button className="add text-center block my-4 mx-auto cursor-pointer font-bold py-[0.425rem] px-2 text-sm w-full rounded-[3px] tracking-[0.1rem] transition-all duration-100 ease-in-out border-black border-2 hover:uppercase" onClick={() => dispatch(addToCart({ resId: id, foodItem: foodItem?.card?.info }))}>Add</button>
+                                  <button className="add text-center block my-4 mx-auto cursor-pointer font-bold py-[0.425rem] px-2 text-sm w-full rounded-[3px] tracking-[0.1rem] transition-all duration-100 ease-in-out border-black border-2 hover:uppercase" onClick={() => {
+                                    const currentCount = getItemCount(foodItem?.card?.info);
+                                    if (currentCount < 3) {
+                                      dispatch(addToCart({ resId: id, foodItem: foodItem?.card?.info }));
+                                      toast.success(`${foodItem?.card?.info?.name} added to cart!`);
+                                    } else {
+                                      toast.warn(`Maximum limit reached! You can only add 3 quantity per item to the cart.`);
+                                    }
+                                  }}>Add</button>
                                 )
                               }
                             </div>
