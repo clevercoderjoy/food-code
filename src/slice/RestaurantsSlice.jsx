@@ -2,6 +2,18 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { restaurantsDataApi } from "../utils/constants";
 import axios from "axios";
 
+const loadState = () => {
+  try {
+    const serializedState = localStorage.getItem('restaurantsState');
+    if (serializedState === null) {
+      return undefined;
+    }
+    return JSON.parse(serializedState);
+  } catch (err) {
+    return undefined;
+  }
+};
+
 export const fetchRestaurants = createAsyncThunk(
   "/restaurants/fetchRestaurants",
   async () => {
@@ -23,7 +35,7 @@ export const fetchRestaurants = createAsyncThunk(
   }
 );
 
-const initialState = {
+const initialState = loadState() || {
   restaurants: [],
   filteredRestaurants: [],
   restaurantsLoading: true,
@@ -38,14 +50,17 @@ export const restaurantsSlice = createSlice({
     resetFilter: (state) => {
       state.filteredRestaurants = state.restaurants;
       state.searchText = "";
+      saveState(state);
     },
     setSearchText: (state, action) => {
       state.searchText = action.payload;
       state.filteredRestaurants = applyFilters(state.restaurants, state.searchText, state.starFilter);
+      saveState(state);
     },
     setStarFilter: (state, action) => {
       state.starFilter = action.payload;
       state.filteredRestaurants = applyFilters(state.restaurants, state.searchText, state.starFilter);
+      saveState(state);
     },
   },
   extraReducers: (builder) => {
@@ -57,6 +72,7 @@ export const restaurantsSlice = createSlice({
         state.restaurants = action.payload;
         state.filteredRestaurants = action.payload;
         state.restaurantsLoading = false;
+        saveState(state);
       })
   },
 });
@@ -69,6 +85,14 @@ const applyFilters = (restaurants, searchText, starFilter) => {
   });
 };
 
+const saveState = (state) => {
+  try {
+    const serializedState = JSON.stringify(state);
+    localStorage.setItem('restaurantsState', serializedState);
+  } catch (e) {
+    console.log(e);
+  }
+};
 
 export const { setSearchText, setStarFilter, resetFilter } = restaurantsSlice.actions;
 
