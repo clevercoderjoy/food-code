@@ -58,7 +58,8 @@ const RestaurantCard = ({ restaurant }) => {
         <div className="restaurantCuisines text-left px-1 text-sm">
           <span>{cuisine}</span>
         </div>
-        <div className="offers my-2 mx-0 rounded-md font-bold text-sm flex items-center justify-center text-center">
+        <div className="
+        s my-2 mx-0 rounded-md font-bold text-sm flex items-center justify-center text-center">
           {aggregatedDiscountInfoV3?.header === undefined &&
             aggregatedDiscountInfoV3?.subHeader === undefined
             ? "Offers Coming Soon"
