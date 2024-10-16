@@ -15,7 +15,6 @@ const restaurantSchema = new mongoose.Schema({
   },
   img: {
     type: String,
-    required: true,
   },
   deliveryTime: {
     type: Number,
@@ -53,4 +52,4 @@ const restaurantSchema = new mongoose.Schema({
   ]
 }, { timestamps: true });
 
-export const RestaurantMenu = mongoose.model("RestaurantMenu", restaurantSchema);
+export const Restaurant = mongoose.model("Restaurant", restaurantSchema);

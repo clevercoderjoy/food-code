@@ -18,6 +18,8 @@ app.get("/", (req, res) => {
   res.send("hello from the server");
 })
 
+app.use("/restaurants", restaurantRoute);
+
 app.listen(8000, () => {
   connect();
   console.log("connected");
