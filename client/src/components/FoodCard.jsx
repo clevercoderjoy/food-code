@@ -16,7 +16,6 @@ const FoodCard = ({ foodItems }) => {
   const dispatch = useDispatch();
   const cart = useSelector(selectCart);
   const navigate = useNavigate();
-
   const { areaName, avgRating, costForTwoMessage, city, cuisines, totalRatingsString, labels, name, id } = foodItems?.data[2]?.card?.card?.info;
   const { offers } = foodItems?.data[3]?.card?.card?.gridElements?.infoWithStyle;
   const { cards } = foodItems?.data[4]?.groupedCard?.cardGroupMap?.REGULAR
