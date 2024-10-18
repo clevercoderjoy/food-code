@@ -3,17 +3,30 @@ import Accordion from "../components/Accordion";
 import { addToCart, emptyCart, removeFromCart, selectCart, selectCurrResId } from "../slice/CartSlice";
 import { fetchRestaurants, selectFilteredRestaurants } from "../slice/RestaurantsSlice";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import Modal from "../components/Modal";
+import { selectCurrentAddressSelected, selectUserAddressList, setCurrentAddressSelected, setUserAddress } from "../slice/UserAddressSlice";
+import { selectIsUserLoggedIn, selectShowModal, setShowModal } from "../slice/UserSlice";
 
 const Cart = () => {
   const cart = useSelector(selectCart);
   const dispatch = useDispatch();
   const restaurants = useSelector(selectFilteredRestaurants);
   const currResId = useSelector(selectCurrResId);
+  const userAddressList = useSelector(selectUserAddressList);
+  const currentAddressSelected = useSelector(selectCurrentAddressSelected);
+  const isUserLoggedIn = useSelector(selectIsUserLoggedIn);
+  const showModal = useSelector(selectShowModal);
+
   const [accordionOpen, setAccordionOpen] = useState([false, false, false, false]);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
 
   const currentRestaurant = restaurants.find((restaurant) => restaurant?.info?.id === currResId);
   const accordionClass = "border-black border-2 my-2 p-[0.3rem] rounded-[3px] text-left";
+
+  useEffect(() => {
+    localStorage.setItem('isLogin', isUserLoggedIn);
+  }, [isUserLoggedIn]);
 
   useEffect(() => {
     dispatch(fetchRestaurants());
@@ -32,10 +45,47 @@ const Cart = () => {
     return totalAmount / 100;
   };
 
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const addressData = Object.fromEntries(formData.entries());
+    dispatch(setUserAddress(addressData));
+    event.target.reset();
+    toast.success('Address added successfully');
+  };
+
   const handlePayment = () => {
-    if (cart.length > 0) {
+    if (!isUserLoggedIn) {
+      dispatch(setShowModal(true));
+      toast.error('Please log in to proceed with payment and select a delivery address.');
+      return;
+    }
+
+    if (currentAddressSelected.length === 0) {
+      toast.error('Please select a delivery address.');
+      return;
+    }
+
+    if (cart.length > 0 && currentAddressSelected && isUserLoggedIn) {
       setPaymentSuccess(true);
       dispatch(emptyCart());
+      dispatch(setCurrentAddressSelected([]));
+      toast.success('Payment successful! Thank you for your purchase.');
+    } else {
+      toast.error('Your cart is empty. Please add items to your cart.');
+    }
+  };
+  console.log("currentAddressSelected", currentAddressSelected);
+
+  const handleAddressSelection = (e) => {
+    const selectedIndex = e.target.value;
+    if (currentAddressSelected === 0) {
+      dispatch(setCurrentAddressSelected([]));
+      dispatch(setCurrentAddressSelected("Select a saved address"));
+    }
+    else {
+      const selectedAddress = userAddressList[selectedIndex];
+      dispatch(setCurrentAddressSelected(selectedAddress));
     }
   };
 
@@ -57,7 +107,7 @@ const Cart = () => {
     }
 
     return (
-      <div className="cartSummary border-2 border-black my-[0.3rem] p-[0.3rem]  rounded-[3px]">
+      <div className="cartSummary border-2 border-black my-[0.3rem] p-[0.3rem] rounded-[3px]">
         <div className="resDetails border-2 border-black rounded-[3px] p-[0.3rem] flex items-center justify-between">
           <div className="resInfo flex flex-col text-left">
             <span className="resName text-[25px] font-bold">
@@ -118,107 +168,130 @@ const Cart = () => {
             <Accordion
               title="Select/Input delivery address"
               content={
-                <form className="addressForm p-4 flex flex-col gap-4">
-                  <div className="nameAndContact flex justify-around items-center">
+                <>
+                  <form className="addressForm p-4 flex flex-col gap-4" onSubmit={handleFormSubmit}>
+                    <div className="nameAndContact flex justify-around items-center">
+                      <div className="formField">
+                        <label htmlFor="firstName" className="block text-lg font-bold">First Name</label>
+                        <input
+                          type="text"
+                          id="firstName"
+                          name="firstName"
+                          className="border-2 border-black p-2 rounded"
+                          placeholder="First name"
+                          required
+                        />
+                      </div>
+                      <div className="formField">
+                        <label htmlFor="lastName" className="block text-lg font-bold">Last Name</label>
+                        <input
+                          type="text"
+                          id="lastName"
+                          name="lastName"
+                          className="border-2 border-black p-2 rounded"
+                          placeholder="Last name"
+                          required
+                        />
+                      </div>
+                      <div className="formField">
+                        <label htmlFor="contactNumber" className="block text-lg font-bold">Contact Number</label>
+                        <input
+                          type="tel"
+                          id="contactNumber"
+                          name="contactNumber"
+                          className="border-2 border-black p-2 rounded"
+                          placeholder="Mobile"
+                          maxLength={10}
+                          pattern="[0-9]{10}"
+                          required
+                        />
+                      </div>
+                      <div className="formField">
+                        <label htmlFor="email" className="block text-lg font-bold">Email</label>
+                        <input
+                          type="email"
+                          id="email"
+                          name="email"
+                          className="border-2 border-black p-2 rounded"
+                          placeholder="Email"
+                          required
+                        />
+                      </div>
+                    </div>
                     <div className="formField">
-                      <label htmlFor="firstName" className="block text-lg font-bold">First Name</label>
+                      <label htmlFor="street" className="block text-lg font-bold">Street Address</label>
                       <input
                         type="text"
-                        id="firstName"
-                        name="firstName"
-                        className="border-2 border-black p-2 rounded"
-                        placeholder="First name"
+                        id="street"
+                        name="street"
+                        className="border-2 border-black p-2 rounded w-full"
+                        placeholder="Address"
                         required
                       />
                     </div>
-                    <div className="formField">
-                      <label htmlFor="lastName" className="block text-lg font-bold">Last Name</label>
-                      <input
-                        type="text"
-                        id="lastName"
-                        name="lastName"
-                        className="border-2 border-black p-2 rounded"
-                        placeholder="Last name"
-                        required
-                      />
+                    <div className="address flex items-center justify-evenly">
+                      <div className="formField">
+                        <label htmlFor="city" className="block text-lg font-bold">City</label>
+                        <input
+                          type="text"
+                          id="city"
+                          name="city"
+                          className="border-2 border-black p-2 rounded"
+                          placeholder="City"
+                          required
+                        />
+                      </div>
+                      <div className="formField">
+                        <label htmlFor="state" className="block text-lg font-bold">State</label>
+                        <input
+                          type="text"
+                          id="state"
+                          name="state"
+                          className="border-2 border-black p-2 rounded"
+                          placeholder="State"
+                          required
+                        />
+                      </div>
+                      <div className="formField">
+                        <label htmlFor="postalCode" className="block text-lg font-bold">Postal Code</label>
+                        <input
+                          type="number"
+                          id="postalCode"
+                          name="postalCode"
+                          className="border-2 border-black p-2 rounded"
+                          placeholder="Pin Code"
+                          maxLength={6}
+                          required
+                        />
+                      </div>
                     </div>
-                    <div className="formField">
-                      <label htmlFor="contactNumber" className="block text-lg font-bold">Contact Number</label>
-                      <input
-                        type="tel"
-                        id="contactNumber"
-                        name="contactNumber"
-                        className="border-2 border-black p-2 rounded"
-                        placeholder="Mobile"
-                        pattern="[0-9]{10}"
-                        required
-                      />
+                    <button
+                      type="submit"
+                      className="bg-black text-white font-bold py-2 px-4 rounded hover:bg-gray-800"
+                    >
+                      Submit
+                    </button>
+                  </form>
+                  {userAddressList.length > 0 && (
+                    <div className="flex justify-center mt-4">
+                      <select
+                        name="selectAddress"
+                        id="selectAddress"
+                        className="w-full p-2 border-2 border-black rounded-[3px] text-lg font-bold bg-white cursor-pointer focus:outline-none"
+                        onChange={handleAddressSelection}
+                      >
+                        <option value="">Select a saved address</option>
+                        {
+                          userAddressList.map((address, index) => (
+                            <option key={index} value={index}>
+                              {address.firstName} {address.lastName} - {address.street}, {address.city}
+                            </option>
+                          ))
+                        }
+                      </select>
                     </div>
-                    <div className="formField">
-                      <label htmlFor="email" className="block text-lg font-bold">Email</label>
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        className="border-2 border-black p-2 rounded"
-                        placeholder="Email"
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="formField">
-                    <label htmlFor="street" className="block text-lg font-bold">Street Address</label>
-                    <input
-                      type="text"
-                      id="street"
-                      name="street"
-                      className="border-2 border-black p-2 rounded w-full"
-                      placeholder="Address"
-                      required
-                    />
-                  </div>
-                  <div className="address flex items-center justify-evenly">
-                    <div className="formField">
-                      <label htmlFor="city" className="block text-lg font-bold">City</label>
-                      <input
-                        type="text"
-                        id="city"
-                        name="city"
-                        className="border-2 border-black p-2 rounded"
-                        placeholder="City"
-                        required
-                      />
-                    </div>
-                    <div className="formField">
-                      <label htmlFor="state" className="block text-lg font-bold">State</label>
-                      <input
-                        type="text"
-                        id="state"
-                        name="state"
-                        className="border-2 border-black p-2 rounded"
-                        placeholder="State"
-                        required
-                      />
-                    </div>
-                    <div className="formField">
-                      <label htmlFor="postalCode" className="block text-lg font-bold">Postal Code</label>
-                      <input
-                        type="text"
-                        id="postalCode"
-                        name="postalCode"
-                        className="border-2 border-black p-2 rounded"
-                        placeholder="Pin Code"
-                        required
-                      />
-                    </div>
-                  </div>
-                  <button
-                    type="submit"
-                    className="bg-black text-white font-bold py-2 px-4 rounded hover:bg-gray-800"
-                  >
-                    Submit
-                  </button>
-                </form>
+                  )}
+                </>
               }
               isOpen={accordionOpen[1]}
               onToggle={() => handleAccordionToggle(1)}
@@ -259,7 +332,7 @@ const Cart = () => {
                 <div>
                   <div className="totalAmount flex items-center justify-between text-xl mt-4">
                     <span>Total Payable Amount:</span>
-                    <span>{getTotalCartAmount()}</span>
+                    <span>₹{getTotalCartAmount()}</span>
                   </div>
                   <button
                     className="flex items-center justify-center border-black border-2 mx-auto mt-4 px-8 text-xl rounded py-4 hover:bg-black hover:text-white"
@@ -283,6 +356,9 @@ const Cart = () => {
       <h2 className="text-4xl font-bold">The Cart Page</h2>
       <div className="cartContainer m-[0.3rem] p-[0.3rem] border-black border-2 rounded-[3px]">
         {renderCartContent()}
+        {showModal && (
+          <Modal />
+        )}
       </div>
     </>
   );

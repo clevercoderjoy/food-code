@@ -1,6 +1,16 @@
-restaurant menu
-cart page
-add remove and delete functionality
+for every user, there should be
+  unique credentials
+  unique address list
+  both should be editable
+
+if role is admin, show add restaurant and add menu
+if role is not admin do not show the above
+
+for each user admin can keep the track of orders with 3 states:
+  pending
+  confirmed
+  delivered
+
 user Profile page
 firebase setup PRIORITY
-
+ 
