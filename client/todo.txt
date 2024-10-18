@@ -2,7 +2,5 @@ restaurant menu
 cart page
 add remove and delete functionality
 user Profile page
-firebase setup
-use firebase as backend to fetch cart and restaurant menu data 
-user authentication with firebase
-manage user profile
+firebase setup PRIORITY
+
