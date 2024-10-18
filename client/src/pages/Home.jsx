@@ -1,9 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import Carousel from "../components/Carousel";
+import { useSelector } from "react-redux";
+import { selectShowModal } from "../slice/UserSlice";
+import Modal from "../components/Modal";
 
 
 const Home = () => {
   const navigate = useNavigate();
+  const showModal = useSelector(selectShowModal);
 
   return (
     <>
@@ -28,6 +32,9 @@ const Home = () => {
           Explore Restaurants
         </button>
       </div>
+      {showModal && (
+        <Modal />
+      )}
     </>
   )
 }

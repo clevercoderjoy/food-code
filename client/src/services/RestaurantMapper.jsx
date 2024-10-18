@@ -2,8 +2,12 @@ import { useSelector } from "react-redux";
 import RestaurantCard from "../components/RestaurantCard";
 import ShimmerHome from "../components/shimmerHome";
 import { selectRestaurantsLoading } from "../slice/RestaurantsSlice";
+import Modal from "../components/Modal";
+import { selectShowModal } from "../slice/UserSlice";
+
 
 const RestaurantMapper = ({ restaurants }) => {
+  const showModal = useSelector(selectShowModal);
   const shimmerCardCount = Array.from({ length: 12 }, () => "");
   const restaurantsLoading = useSelector(selectRestaurantsLoading);
 
@@ -27,6 +31,9 @@ const RestaurantMapper = ({ restaurants }) => {
           restaurants?.length === 0 &&
           shimmerCardCount.map((_, index) => <ShimmerHome key={index} />)}
       </div>
+      {showModal && (
+        <Modal />
+      )}
     </div>
   );
 }
