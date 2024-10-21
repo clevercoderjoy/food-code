@@ -1,6 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { CDN_URL } from "../utils/constants";
 import { showEllipsis } from "../utils/helperFunctions";
+import { useSelector } from "react-redux";
+import { FaPen } from 'react-icons/fa';
+import { selectCurrentUser } from "../slice/UserSlice";
 
 const RestaurantCard = ({ restaurant }) => {
 
@@ -26,9 +29,16 @@ const RestaurantCard = ({ restaurant }) => {
       state: { restaurantMenu: restaurant?.cta }
     })
   }
+  const currentUser = useSelector(selectCurrentUser);
+  const isAdmin = currentUser?.role === 'admin';
 
   return (
     <div className="restaurantContainer w-[240px] h-[375px] mt-4 mx-2 mb-4 rounded-lg border-2 border-black shadow-md transition-transform duration-200 ease-in-out relative hover:scale-105 cursor-pointer">
+      {isAdmin && (
+        <div className="absolute top-0 right-0 z-10 bg-white p-4 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-200">
+          <FaPen className="text-gray-700 hover:text-gray-900 cursor-pointer" />
+        </div>
+      )}
       <div className="restaurantImgContainer m-auto text-center p-2">
         <img
           src={CDN_URL + cloudinaryImageId}

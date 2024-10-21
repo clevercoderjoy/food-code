@@ -5,7 +5,6 @@ import { toast } from "react-toastify";
 import { FaTimes } from 'react-icons/fa';
 import app from "../firebase/config";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 
 const Modal = () => {
   const dispatch = useDispatch();
@@ -26,7 +25,6 @@ const Modal = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const auth = getAuth(app);
-    const db = getFirestore(app);
 
     try {
       if (!isLogin) {
@@ -35,14 +33,6 @@ const Modal = () => {
           return;
         }
         const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-
-        const userDocRef = doc(db, 'users', userCredential.user.uid);
-        await setDoc(userDocRef, {
-          email: userCredential.user.email,
-          role: formData.isAdmin ? 'admin' : 'user',
-          createdAt: new Date().toISOString()
-        });
-
         dispatch(setCurrentUser({
           email: userCredential.user.email,
           uid: userCredential.user.uid,
@@ -51,20 +41,12 @@ const Modal = () => {
         toast.success('Signup successful! You are now logged in.');
       } else {
         const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
-
-        const userDocRef = doc(db, 'users', userCredential.user.uid);
-        const userDoc = await getDoc(userDocRef);
-
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          dispatch(setCurrentUser({
-            email: userCredential.user.email,
-            uid: userCredential.user.uid,
-            role: userData.role
-          }));
-        }
-
+        dispatch(setCurrentUser({
+          email: userCredential.user.email,
+          uid: userCredential.user.uid,
+        }));
         toast.success('Login successful!');
+        console.log("userCredential", userCredential);
       }
       dispatch(setIsUserLoggedIn(true));
       dispatch(setShowModal(false));

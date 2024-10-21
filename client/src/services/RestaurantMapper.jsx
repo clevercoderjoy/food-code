@@ -18,7 +18,7 @@ const RestaurantMapper = ({ restaurants }) => {
     <div className="container mx-auto py-8">
       <div className="restaurantCards flex flex-grow flex-wrap items-center justify-center">
         {restaurantsLoading ? (
-          <ShimmerHome />
+          shimmerCardCount.map((_, index) => <ShimmerHome key={index} />)
         ) : (
           <>
             {currentUser?.role === 'admin' && <AddCard />}
@@ -27,18 +27,14 @@ const RestaurantMapper = ({ restaurants }) => {
                 <RestaurantCard key={index} restaurant={restaurant} />
               ))
             ) : (
-              !restaurantsLoading && (
-                <div className="w-full text-center py-16">
-                  <div className="text-5xl font-bold">
-                    No Restaurants found for this filter! :/
-                  </div>
+              <div className="w-full text-center py-16">
+                <div className="text-5xl font-bold">
+                  No Restaurants found for this filter! :/
                 </div>
-              )
+              </div>
             )}
           </>
         )}
-        {restaurantsLoading && restaurants?.length === 0 &&
-          shimmerCardCount.map((_, index) => <ShimmerHome key={index} />)}
       </div>
       {showModal && <Modal />}
     </div>
