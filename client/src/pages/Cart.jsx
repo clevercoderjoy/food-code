@@ -87,7 +87,7 @@ const Cart = () => {
       return;
     }
     console.log(currentAddressSelected)
-    if (cart.length > 0 && currentAddressSelected && isUserLoggedIn) {
+    if (cart.length > 0 || (currentAddressSelected && isUserLoggedIn)) {
       setPaymentSuccess(true);
       dispatch(emptyCart());
       dispatch(setCurrentAddressSelected([]));

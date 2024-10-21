@@ -66,14 +66,14 @@ const userAddressSlice = createSlice({
       })
       .addCase(fetchUserAddresses.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.userAddressList = action.payload;
+        state.userAddressList = action.payload; 
       })
       .addCase(fetchUserAddresses.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.error.message;
+        state.error = action.error.message; 
       })
       .addCase(addUserAddress.fulfilled, (state, action) => {
-        state.userAddressList.unshift(action.payload);
+        state.userAddressList.unshift(action.payload); 
       });
   },
 });
