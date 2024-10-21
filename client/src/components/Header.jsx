@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import { selectCart } from "../slice/CartSlice";
 import {
   clearUserDetails,
@@ -10,6 +11,8 @@ import {
   setShowModal
 } from "../slice/UserSlice";
 import { setCurrentAddressSelected } from "../slice/UserAddressSlice";
+import { getAuth, signOut } from "firebase/auth";
+import app from "../firebase/config";
 
 const Header = ({ cartItems }) => {
   const [isOptionsVisible, setOptionsVisible] = useState(false);
@@ -58,17 +61,27 @@ const Header = ({ cartItems }) => {
     let totalCartItems = 0;
     cart.forEach((item) => totalCartItems += item.quantity);
     return totalCartItems;
-  }
+  };
 
   const handleAuth = () => {
     if (!isUserLoggedIn) {
       dispatch(setShowModal(true));
     } else if (isOptionsVisible) {
-      // Only log out when the submenu is visible
+      logout();
+    }
+  };
+
+  const logout = async () => {
+    const auth = getAuth(app);
+    try {
+      await signOut(auth);
       dispatch(clearUserDetails());
       dispatch(setIsUserLoggedIn(false));
       setOptionsVisible(false);
       dispatch(setCurrentAddressSelected([]));
+      toast.warn("User logged out successfully.");
+    } catch (error) {
+      toast.error("Error logging out:", error);
     }
   };
 
