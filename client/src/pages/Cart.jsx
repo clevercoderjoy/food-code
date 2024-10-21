@@ -5,8 +5,8 @@ import { fetchRestaurants, selectFilteredRestaurants } from "../slice/Restaurant
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Modal from "../components/Modal";
-import { selectCurrentAddressSelected, selectUserAddressList, setCurrentAddressSelected, setUserAddress } from "../slice/UserAddressSlice";
-import { selectIsUserLoggedIn, selectShowModal, setShowModal } from "../slice/UserSlice";
+import { addUserAddress, fetchUserAddresses, selectCurrentAddressSelected, selectUserAddressList, setCurrentAddressSelected } from "../slice/UserAddressSlice";
+import { selectCurrentUser, selectIsUserLoggedIn, selectShowModal, setShowModal } from "../slice/UserSlice";
 
 const Cart = () => {
   const cart = useSelector(selectCart);
@@ -17,7 +17,7 @@ const Cart = () => {
   const currentAddressSelected = useSelector(selectCurrentAddressSelected);
   const isUserLoggedIn = useSelector(selectIsUserLoggedIn);
   const showModal = useSelector(selectShowModal);
-
+  const currentUser = useSelector(selectCurrentUser);
   const [accordionOpen, setAccordionOpen] = useState([false, false, false, false]);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
 
@@ -45,14 +45,35 @@ const Cart = () => {
     return totalAmount / 100;
   };
 
-  const handleFormSubmit = (event) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
+    if (!currentUser?.uid) {
+      toast.error('Please log in to add an address');
+      return;
+    }
+
     const formData = new FormData(event.target);
     const addressData = Object.fromEntries(formData.entries());
-    dispatch(setUserAddress(addressData));
-    event.target.reset();
-    toast.success('Address added successfully');
+
+    try {
+      await dispatch(addUserAddress({
+        userId: currentUser.uid,
+        address: addressData
+      })).unwrap();
+
+      toast.success('Address added successfully');
+      event.target.reset();
+    } catch (error) {
+      console.error('Error details:', error);
+      toast.error('Failed to add address: ' + error.message);
+    }
   };
+
+  useEffect(() => {
+    if (currentUser?.uid) {
+      dispatch(fetchUserAddresses(currentUser.uid));
+    }
+  }, [currentUser, dispatch]);
 
   const handlePayment = () => {
     if (!isUserLoggedIn) {
@@ -61,11 +82,11 @@ const Cart = () => {
       return;
     }
 
-    if (currentAddressSelected.length === 0) {
+    if (currentAddressSelected?.length === 0) {
       toast.error('Please select a delivery address.');
       return;
     }
-
+    console.log(currentAddressSelected)
     if (cart.length > 0 && currentAddressSelected && isUserLoggedIn) {
       setPaymentSuccess(true);
       dispatch(emptyCart());
@@ -75,7 +96,6 @@ const Cart = () => {
       toast.error('Your cart is empty. Please add items to your cart.');
     }
   };
-  console.log("currentAddressSelected", currentAddressSelected);
 
   const handleAddressSelection = (e) => {
     const selectedIndex = e.target.value;

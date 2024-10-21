@@ -1,4 +1,38 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { collection, addDoc, getDocs, query, where, getFirestore } from 'firebase/firestore';
+import app from '../firebase/config';
+
+const db = getFirestore(app);
+
+export const fetchUserAddresses = createAsyncThunk(
+  'userAddress/fetchAddresses',
+  async (userId) => {
+    if (!userId) throw new Error('User ID is required');
+    const addressesRef = collection(db, 'userAddressList');
+    const q = query(addressesRef, where('userId', '==', userId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  }
+);
+
+export const addUserAddress = createAsyncThunk(
+  'userAddress/addAddress',
+  async ({ userId, address }, { rejectWithValue }) => {
+    if (!userId) return rejectWithValue('User ID is required');
+    try {
+      const addressesRef = collection(db, 'userAddressList');
+      const docRef = await addDoc(addressesRef, {
+        ...address,
+        userId,
+        createdAt: new Date().toISOString(),
+      });
+      return { id: docRef.id, ...address };
+    } catch (error) {
+      console.error('Firestore error:', error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
 const initialState = {
   userAddress: {
@@ -11,48 +45,40 @@ const initialState = {
     state: "",
     pinCode: null,
   },
-  userAddressList: JSON.parse(localStorage.getItem('userAddressList')) || [],
-  currentAddressSelected: JSON.parse(localStorage.getItem('userAddressList')) || null,
+  userAddressList: [],
+  currentAddressSelected: null,
+  status: 'idle',
+  error: null,
 };
 
 const userAddressSlice = createSlice({
   name: 'userAddress',
   initialState,
   reducers: {
-    setUserAddress(state, action) {
-      const newAddress = action.payload;
-      const addressExists = state.userAddressList.some(
-        (address) =>
-          address.firstName === newAddress.firstName &&
-          address.lastName === newAddress.lastName &&
-          address.mobile === newAddress.mobile &&
-          address.email === newAddress.email &&
-          address.address === newAddress.address &&
-          address.city === newAddress.city &&
-          address.state === newAddress.state &&
-          address.pinCode === newAddress.pinCode
-      );
-
-      if (!addressExists) {
-        state.userAddress = newAddress;
-        state.userAddressList = [newAddress, ...state.userAddressList];
-        localStorage.setItem('userAddressList', JSON.stringify(state.userAddressList));
-      } else {
-        console.log('Address already exists');
-      }
-    },
-    getUserAddressList(state) {
-      return state.userAddressList;
-    },
     setCurrentAddressSelected(state, action) {
       state.currentAddressSelected = action.payload;
-      localStorage.setItem('currentAddressSelected', JSON.stringify(state.currentAddressSelected));
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchUserAddresses.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchUserAddresses.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.userAddressList = action.payload;
+      })
+      .addCase(fetchUserAddresses.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
+      })
+      .addCase(addUserAddress.fulfilled, (state, action) => {
+        state.userAddressList.unshift(action.payload);
+      });
   },
 });
 
-export const { setUserAddress, getUserAddressList, setCurrentAddressSelected } = userAddressSlice.actions;
-
+export const { setCurrentAddressSelected } = userAddressSlice.actions;
 export const selectUserAddress = (state) => state.userAddress.userAddress;
 export const selectUserAddressList = (state) => state.userAddress.userAddressList;
 export const selectCurrentAddressSelected = (state) => state.userAddress.currentAddressSelected;
