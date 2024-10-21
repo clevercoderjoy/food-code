@@ -117,7 +117,6 @@ const Header = ({ cartItems }) => {
           </div>
         </div>
       </header>
-      {/* some change */}
     </>
   );
 };
