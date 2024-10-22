@@ -20,6 +20,35 @@ const FoodCard = ({ foodItems, restaurant }) => {
   const dispatch = useDispatch();
   const cart = useSelector(selectCart);
   const navigate = useNavigate();
+
+  const groupedItems = foodItems.reduce((acc, item) => {
+    // Check if the category already exists in the accumulator
+    if (!acc[item.category]) {
+      // If not, create a new array for this category
+      acc[item.category] = [];
+    }
+    // Push the current item into the appropriate category array
+    acc[item.category].push(item);
+    return acc;
+  }, {});
+
+  // To convert the grouped object into an array of categories with items
+  const groupedArray = Object.keys(groupedItems).map(category => ({
+    category,
+    items: groupedItems[category],
+  }));
+
+  console.log(groupedArray);
+
+  // const groupedMenuItems = foodItems.reduce((acc, curr) => {
+  //   const category = curr.category;
+  //   const items = curr.card.card.itemCards;
+  //   if (!acc[category]) {
+  //     acc[category] = [];
+  //   }
+  //   acc[category] = acc[category].concat(items);
+  //   return acc;
+  // }, {});
   // const { areaName, avgRating, costForTwoMessage, city, cuisines, totalRatingsString, labels, name, id } = foodItems?.data[2]?.card?.card?.info;
   // const { offers } = foodItems?.data[3]?.card?.card?.gridElements?.infoWithStyle;
   // const { cards } = foodItems?.data[4]?.groupedCard?.cardGroupMap?.REGULAR
