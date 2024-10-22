@@ -14,17 +14,12 @@ const RestaurantCard = ({ restaurant }) => {
 
   console.log("🚀 ~ file: RestaurantCard.jsx:14 ~ RestaurantCard ~ restaurant:", restaurant);
   const {
-    address,
-    area,
     avgRating,
-    city,
     cloudinaryImageId,
     costForTwo,
     cuisines,
     deliveryTime,
     discount,
-    offers,
-    totalRatings,
     name,
   } = restaurant.info;
 
@@ -36,19 +31,22 @@ const RestaurantCard = ({ restaurant }) => {
     : showEllipsis(cuisines.join(" "), 2);
 
   const openRestaurantMenu = () => {
-    navigate(`/restaurants/${id}`, {
-      state: { restaurantMenu: restaurant?.cta }
+    navigate(`/restaurants/${restaurant.id}`, {
+      state: { restaurantMenu: restaurant }
     })
   }
   const currentUser = useSelector(selectCurrentUser);
   const isAdmin = currentUser?.role === 'admin';
 
-  const handleEditClick = (event) => {
-    event.stopPropagation();
+  const handleEditClick = () => {
     navigate("/restaurants/addRestaurant", {
       state: { restaurantData: restaurant }
     });
   };
+
+  const handleEditMenuClick = () => {
+    navigate("/restaurants/addFood");
+  }
 
   const handleDeleteClick = (event) => {
     event.stopPropagation();
@@ -79,7 +77,7 @@ const RestaurantCard = ({ restaurant }) => {
             </div>
           </div>
           <div className="relative">
-            <div className="absolute top-0 right-0 z-10 bg-white p-4 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-200 group">
+            <div className="absolute top-0 right-0 z-10 bg-white p-4 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-200 group" onClick={handleEditMenuClick}>
               <IoFastFood className="text-gray-700 hover:text-gray-900 cursor-pointer" />
               <span className="absolute left-0 top-[-18px] transform -translate-y-1/2 whitespace-nowrap bg-black text-white text-sm p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 Edit Food Menu

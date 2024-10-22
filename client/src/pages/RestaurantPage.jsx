@@ -5,6 +5,8 @@ import FoodCard from "../components/FoodCard";
 const RestaurantPage = () => {
   const location = useLocation();
   const { restaurantMenu } = location.state;
+
+  console.log("🚀 ~ file: RestaurantPage.jsx:9 ~ RestaurantPage ~ restaurantMenu:", restaurantMenu);
   const [accordionOpen, setAccordionOpen] = useState(0);
 
   const handleAccordionToggle = (index) => {
