@@ -7,18 +7,18 @@ const db = getFirestore(app);
 const foodSlice = createSlice({
   name: 'food',
   initialState: {
-    items: [],
+    foodItems: [],
     loading: false,
     error: null,
   },
   reducers: {
     addFoodItem: (state, action) => {
-      state.items.push(action.payload);
+      state.foodItems.push(action.payload);
       state.loading = false;
       state.error = null;
     },
     setFoodItems: (state, action) => {
-      state.items = action.payload;
+      state.foodItems = action.payload;
       state.loading = false;
       state.error = null;
     },
@@ -33,15 +33,18 @@ const foodSlice = createSlice({
   },
 });
 
-// Async action to fetch all food items for a particular restaurant
-export const fetchFoodItemsByRestaurant = (restaurantId) => async (dispatch) => {
+export const fetchFoodItemsByRestaurantId = (restaurantId) => async (dispatch) => {
+  if (!restaurantId) {
+    dispatch(setError('Restaurant ID is required'));
+    throw new Error('Restaurant ID is required');
+  }
+
   try {
     dispatch(setLoading());
     const foodItemRef = collection(db, 'foodItems');
     const q = query(foodItemRef, where('restaurantId', '==', restaurantId));
     const querySnapshot = await getDocs(q);
-
-    const foodItems = querySnapshot.docs.map((doc) => ({
+    const foodItems = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
     }));
@@ -77,5 +80,6 @@ export const addFood = (foodItem) => async (dispatch) => {
 };
 
 export const { addFoodItem, setFoodItems, setLoading, setError } = foodSlice.actions;
+export const selectFoodItems = (state) => state.food.foodItems;
 
 export default foodSlice.reducer;

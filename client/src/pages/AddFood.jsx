@@ -8,7 +8,7 @@ const AddFood = () => {
 
   const dispatch = useDispatch();
   const location = useLocation();
-  const { restaurantId } = location.state;
+  const { restaurant } = location.state;
   const [formData, setFormData] = useState({
     foodName: '',
     foodCategory: '',
@@ -29,7 +29,7 @@ const AddFood = () => {
     e.preventDefault();
 
     const foodItem = {
-      restaurantId: restaurantId,
+      restaurantId: restaurant.id,
       name: formData.foodName,
       category: formData.foodCategory,
       image: formData.foodImage,

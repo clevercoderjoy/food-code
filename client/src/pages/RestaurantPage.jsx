@@ -1,31 +1,20 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import FoodCard from "../components/FoodCard";
-import { useDispatch } from "react-redux";
-import { fetchFoodItemsByRestaurant } from "../slice/FoodSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchFoodItemsByRestaurantId, selectFoodItems } from "../slice/FoodSlice";
 
 const RestaurantPage = () => {
   const location = useLocation();
-  const { restaurantId } = location.state;
+  const { restaurant } = location.state;
   const [accordionOpen, setAccordionOpen] = useState(0);
   const dispatch = useDispatch();
-  const [data, setData] = useState([])
-
+  const foodItems = useSelector(selectFoodItems);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const result = await dispatch(fetchFoodItemsByRestaurant(restaurantId));
-        setData(result.payload);
-      } catch (error) {
-        console.error("Failed to fetch food items:", error);
-      }
-    };
+    dispatch(fetchFoodItemsByRestaurantId(restaurant.id));
+  }, [dispatch, restaurant.id]);
 
-    fetchData();
-  }, [dispatch, restaurantId]);
-
-  console.log("🚀 ~ file: RestaurantPage.jsx:14 ~ RestaurantPage ~ data:", data);
 
   const handleAccordionToggle = (index) => {
     setAccordionOpen(accordionOpen === index ? null : index);
@@ -33,15 +22,16 @@ const RestaurantPage = () => {
 
   return (
     <>
-      {/* {restaurantMenu ? (
+      {foodItems ? (
         <FoodCard
-          foodItems={restaurantMenu}
+          foodItems={foodItems}
+          restaurant={restaurant}
           accordionOpen={accordionOpen}
           onAccordionToggle={handleAccordionToggle}
         />
       ) : (
         <div>Loading menu...</div>
-      )} */}
+      )}
     </>
   );
 };

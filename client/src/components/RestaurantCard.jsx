@@ -7,7 +7,6 @@ import { IoFastFood } from "react-icons/io5";
 import { selectCurrentUser } from "../slice/UserSlice";
 import { TiDelete } from "react-icons/ti";
 import { deleteRestaurant } from "../slice/RestaurantsSlice";
-import { fetchFoodItemsByRestaurant } from "../slice/FoodSlice";
 
 
 
@@ -33,7 +32,7 @@ const RestaurantCard = ({ restaurant }) => {
 
   const openRestaurantMenu = () => {
     navigate(`/restaurants/${restaurant.id}`, {
-      state: { restaurantId: restaurant.id }
+      state: { restaurant: restaurant }
     })
   }
   const currentUser = useSelector(selectCurrentUser);
@@ -47,7 +46,7 @@ const RestaurantCard = ({ restaurant }) => {
 
   const handleEditMenuClick = () => {
     navigate("/restaurants/addFood", {
-      state: { restaurantId: restaurant.id }
+      state: { restaurant: restaurant }
     });
   }
 

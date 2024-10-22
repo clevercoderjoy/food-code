@@ -10,35 +10,39 @@ import { BadgeX } from "lucide-react";
 import { toast } from "react-toastify";
 
 
-const FoodCard = ({ foodItems }) => {
+const FoodCard = ({ foodItems, restaurant }) => {
+
+  console.log("🚀 ~ file: FoodCard.jsx:15 ~ FoodCard ~ restaurant:", restaurant);
+
 
   const [accordionOpen, setAccordionOpen] = useState(0);
+  console.log("🚀 ~ file: FoodCard.jsx:15 ~ FoodCard ~ foodItems:", foodItems);
   const dispatch = useDispatch();
   const cart = useSelector(selectCart);
   const navigate = useNavigate();
-  const { areaName, avgRating, costForTwoMessage, city, cuisines, totalRatingsString, labels, name, id } = foodItems?.data[2]?.card?.card?.info;
-  const { offers } = foodItems?.data[3]?.card?.card?.gridElements?.infoWithStyle;
-  const { cards } = foodItems?.data[4]?.groupedCard?.cardGroupMap?.REGULAR
+  // const { areaName, avgRating, costForTwoMessage, city, cuisines, totalRatingsString, labels, name, id } = foodItems?.data[2]?.card?.card?.info;
+  // const { offers } = foodItems?.data[3]?.card?.card?.gridElements?.infoWithStyle;
+  // const { cards } = foodItems?.data[4]?.groupedCard?.cardGroupMap?.REGULAR
 
-  const menuItems = cards.slice(2, cards.length - 2);
-  const handleAccordionToggle = (index) => {
-    setAccordionOpen(accordionOpen === index ? null : index);
-  };
+  // const menuItems = cards.slice(2, cards.length - 2);
+  // const handleAccordionToggle = (index) => {
+  //   setAccordionOpen(accordionOpen === index ? null : index);
+  // };
 
-  const getItemCount = (food) => {
-    const itemInCart = cart.find((item) => item.id === food.id);
-    return itemInCart ? itemInCart.quantity : 0;
-  }
+  // const getItemCount = (food) => {
+  //   const itemInCart = cart.find((item) => item.id === food.id);
+  //   return itemInCart ? itemInCart.quantity : 0;
+  // }
 
-  const getTotalCartItems = () => {
-    let totalCartItems = 0;
-    cart.map((item) => totalCartItems += item.quantity)
-    return totalCartItems;
-  }
+  // const getTotalCartItems = () => {
+  //   let totalCartItems = 0;
+  //   cart.map((item) => totalCartItems += item.quantity)
+  //   return totalCartItems;
+  // }
 
   return (
     <>
-      <div className="menuContainer my-2 mx-[0.3rem] p-[0.3rem] border-2 border-black rounded-[3px]">
+      {/* <div className="menuContainer my-2 mx-[0.3rem] p-[0.3rem] border-2 border-black rounded-[3px]">
         {cart.length > 0 && (
           <button className="viewCartButton fixed bottom-1 right-[11rem] py-[1rem] font-bold px-4 text-center text-lg font-bold bg-black text-white rounded cursor-pointer"
             onClick={() => navigate("/cart")}>
@@ -178,7 +182,7 @@ const FoodCard = ({ foodItems }) => {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
     </>
   )
 }
