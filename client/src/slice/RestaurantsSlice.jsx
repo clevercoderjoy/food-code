@@ -56,14 +56,11 @@ export const addOrUpdateRestaurant = createAsyncThunk(
   async (restaurantData, { rejectWithValue }) => {
     try {
       const restaurantsRef = collection(db, "restaurants");
-      const restaurantDocRef = doc(restaurantsRef, restaurantData.id);
 
       const processedData = processRestaurantData(restaurantData);
 
-      const restaurantSnapshot = await getDocs(restaurantsRef);
-      const exists = restaurantSnapshot.docs.some(doc => doc.id === restaurantData.id);
-
-      if (exists) {
+      if (restaurantData.id) {
+        const restaurantDocRef = doc(restaurantsRef, restaurantData.id);
         await updateDoc(restaurantDocRef, {
           info: processedData,
         });
@@ -82,6 +79,7 @@ export const addOrUpdateRestaurant = createAsyncThunk(
   }
 );
 
+
 export const deleteRestaurant = createAsyncThunk(
   "/restaurants/deleteRestaurant",
   async (id, { rejectWithValue }) => {
@@ -89,7 +87,7 @@ export const deleteRestaurant = createAsyncThunk(
     try {
       const restaurantDocRef = doc(db, "restaurants", id);
       await deleteDoc(restaurantDocRef);
-      return id; 
+      return id;
     } catch (error) {
       console.error("Error deleting restaurant:", error);
       return rejectWithValue(error.message);

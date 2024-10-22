@@ -2,9 +2,13 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addFood } from '../slice/FoodSlice';
 import { toast } from 'react-toastify';
+import { useLocation } from 'react-router-dom';
 
-const AddFood = ({ restaurantId }) => {
+const AddFood = () => {
+
   const dispatch = useDispatch();
+  const location = useLocation();
+  const { restaurantId } = location.state;
   const [formData, setFormData] = useState({
     foodName: '',
     foodCategory: '',
@@ -25,7 +29,7 @@ const AddFood = ({ restaurantId }) => {
     e.preventDefault();
 
     const foodItem = {
-      restaurantId,
+      restaurantId: restaurantId,
       name: formData.foodName,
       category: formData.foodCategory,
       image: formData.foodImage,
@@ -44,7 +48,6 @@ const AddFood = ({ restaurantId }) => {
       });
       toast.success('Food item added successfully!');
     } catch (error) {
-      console.error('Error adding food item: ', error);
       toast.error('Error adding food item.');
     }
   };
