@@ -1,81 +1,106 @@
-import { createSlice } from "@reduxjs/toolkit"
+import { createSlice } from "@reduxjs/toolkit";
 
-const loadState = () => {
-  try {
-    const serializedState = localStorage.getItem('cartState');
-    if (serializedState === null) {
-      return undefined;
-    }
-    return JSON.parse(serializedState);
-  } catch (err) {
-    return undefined;
-  }
+const saveCartToLocalStorage = (cartData) => {
+  localStorage.setItem('cartItems', JSON.stringify(cartData));
 };
 
-const initialState = loadState() || {
-  cart: [],
-  currResId: null,
+const getCartFromLocalStorage = () => {
+  const storedCart = localStorage.getItem('cartItems');
+  return storedCart ? JSON.parse(storedCart) : { cart: [], currResId: null };
 };
 
-export const cartSlice = createSlice({
+const cartSlice = createSlice({
   name: "cart",
-  initialState,
+  initialState: {
+    cart: getCartFromLocalStorage().cart,
+    currResId: getCartFromLocalStorage().currResId,
+    isLoading: false,
+  },
   reducers: {
+    setCartData: (state, action) => {
+      state.cart = action.payload.cart;
+      state.currResId = action.payload.currResId;
+      state.isLoading = false;
+    },
     addToCart: (state, action) => {
-      const foodItem = action.payload.foodItem;
-      const resId = action.payload.resId;
+      const { foodItem, resId } = action.payload;
+
       if (state.currResId !== null && state.currResId !== resId) {
         state.cart = [];
       }
       state.currResId = resId;
-      const doesItemExistInCart = state.cart.find((item) => item.id === foodItem.id);
-      if (doesItemExistInCart) {
-        if (doesItemExistInCart.quantity < 3) {
-          doesItemExistInCart.quantity += 1;
+
+      const existingItem = state.cart.find(item => item.id === foodItem.id);
+      if (existingItem) {
+        if (existingItem.quantity < 3) {
+          existingItem.quantity += 1;
         }
       } else {
         state.cart.push({ ...foodItem, quantity: 1 });
       }
-      saveState(state);
-    },
 
+      saveCartToLocalStorage({
+        cart: state.cart,
+        currResId: state.currResId,
+      });
+    },
     removeFromCart: (state, action) => {
       const foodItem = action.payload;
-      const doesItemExistsInCart = state.cart.find((item) => item.id === foodItem.id);
-      if (doesItemExistsInCart.quantity > 1) {
-        doesItemExistsInCart.quantity -= 1;
-      } else {
-        state.cart = state.cart.filter((item) => item.id !== foodItem.id);
-      }
-      saveState(state);
-    },
+      const existingItem = state.cart.find(item => item.id === foodItem.id);
 
+      if (existingItem) {
+        if (existingItem.quantity > 1) {
+          existingItem.quantity -= 1;
+        } else {
+          state.cart = state.cart.filter(item => item.id !== foodItem.id);
+        }
+      }
+
+      saveCartToLocalStorage({
+        cart: state.cart,
+        currResId: state.currResId,
+      });
+    },
     deleteFromCart: (state, action) => {
       const foodItem = action.payload;
-      state.cart = state.cart.filter((item) => item.id !== foodItem.id);
-      saveState(state);
-    },
+      state.cart = state.cart.filter(item => item.id !== foodItem.id);
 
+      if (state.cart.length === 0) {
+        state.currResId = null;
+      }
+
+      saveCartToLocalStorage({
+        cart: state.cart,
+        currResId: state.currResId,
+      });
+    },
     emptyCart: (state) => {
       state.cart = [];
       state.currResId = null;
-      saveState(state);
-    }
-  },
-})
 
-const saveState = (state) => {
-  try {
-    const serializedState = JSON.stringify(state);
-    localStorage.setItem('cartState', serializedState);
-  } catch (e) {
-    console.log(e)
+      saveCartToLocalStorage({
+        cart: [],
+        currResId: null,
+      });
+    }
   }
+});
+
+export const initializeCart = () => (dispatch) => {
+  const storedCart = getCartFromLocalStorage();
+  dispatch(setCartData(storedCart));
 };
 
-export const { emptyCart, removeFromCart, addToCart, deleteFromCart } = cartSlice.actions;
+export const {
+  setCartData,
+  addToCart,
+  removeFromCart,
+  deleteFromCart,
+  emptyCart
+} = cartSlice.actions;
 
 export const selectCart = (state) => state.cart.cart;
 export const selectCurrResId = (state) => state.cart.currResId;
+export const selectIsLoading = (state) => state.cart.isLoading;
 
 export default cartSlice.reducer;

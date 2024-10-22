@@ -21,59 +21,67 @@ const FoodCard = ({ foodItems, restaurant }) => {
   const cart = useSelector(selectCart);
   const navigate = useNavigate();
 
-  const groupedItems = foodItems.reduce((acc, item) => {
-    // Check if the category already exists in the accumulator
+  const groupedFoodItems = foodItems.reduce((acc, item) => {
     if (!acc[item.category]) {
-      // If not, create a new array for this category
       acc[item.category] = [];
     }
-    // Push the current item into the appropriate category array
     acc[item.category].push(item);
     return acc;
   }, {});
 
-  // To convert the grouped object into an array of categories with items
-  const groupedArray = Object.keys(groupedItems).map(category => ({
+  const categoryWiseFoodItems = Object.keys(groupedFoodItems).map(category => ({
     category,
-    items: groupedItems[category],
+    items: groupedFoodItems[category],
   }));
 
-  console.log(groupedArray);
+  console.log("groupedArray", groupedFoodItems);
 
-  // const groupedMenuItems = foodItems.reduce((acc, curr) => {
-  //   const category = curr.category;
-  //   const items = curr.card.card.itemCards;
-  //   if (!acc[category]) {
-  //     acc[category] = [];
-  //   }
-  //   acc[category] = acc[category].concat(items);
-  //   return acc;
-  // }, {});
-  // const { areaName, avgRating, costForTwoMessage, city, cuisines, totalRatingsString, labels, name, id } = foodItems?.data[2]?.card?.card?.info;
+  const { address, areaName, avgRating, city, cloudinaryImageId, costForTwo, cuisines, deliveryTime, discount, name, offers, totalRatings } = restaurant.info;
   // const { offers } = foodItems?.data[3]?.card?.card?.gridElements?.infoWithStyle;
   // const { cards } = foodItems?.data[4]?.groupedCard?.cardGroupMap?.REGULAR
 
   // const menuItems = cards.slice(2, cards.length - 2);
-  // const handleAccordionToggle = (index) => {
-  //   setAccordionOpen(accordionOpen === index ? null : index);
-  // };
+  const handleAccordionToggle = (index) => {
+    setAccordionOpen(accordionOpen === index ? null : index);
+  };
 
-  // const getItemCount = (food) => {
-  //   const itemInCart = cart.find((item) => item.id === food.id);
-  //   return itemInCart ? itemInCart.quantity : 0;
-  // }
+  const getItemCount = (food) => {
+    if (!food?.id) return 0;
+    const itemInCart = cart.find((item) => item.id === food.id);
+    return itemInCart ? itemInCart.quantity : 0;
+  };
 
-  // const getTotalCartItems = () => {
-  //   let totalCartItems = 0;
-  //   cart.map((item) => totalCartItems += item.quantity)
-  //   return totalCartItems;
-  // }
+  const getTotalCartItems = () => {
+    return cart.reduce((total, item) => total + item.quantity, 0);
+  };
 
+  const handleAddToCart = (foodItem) => {
+    const currentCount = getItemCount(foodItem);
+    if (currentCount < 3) {
+      dispatch(addToCart({
+        resId: restaurant.id || `${restaurant.info.name}`.replace(/\s+/g, '-').toLowerCase(),
+        foodItem
+      }));
+      toast.success(`${foodItem.name} added to cart!`);
+    } else {
+      toast.warn(`Maximum limit reached! You can only add 3 quantity per item to the cart.`);
+    }
+  };
+
+  const handleRemoveFromCart = (foodItem) => {
+    dispatch(removeFromCart(foodItem));
+    toast.error(`${foodItem.name} removed from cart!`);
+  };
+
+  const handleDeleteFromCart = (foodItem) => {
+    dispatch(deleteFromCart(foodItem));
+    toast.error(`${foodItem.name} has been deleted from cart!`);
+  };
   return (
     <>
-      {/* <div className="menuContainer my-2 mx-[0.3rem] p-[0.3rem] border-2 border-black rounded-[3px]">
+      <div className="menuContainer my-2 mx-[0.3rem] p-[0.3rem] border-2 border-black rounded-[3px]">
         {cart.length > 0 && (
-          <button className="viewCartButton fixed bottom-1 right-[11rem] py-[1rem] font-bold px-4 text-center text-lg font-bold bg-black text-white rounded cursor-pointer"
+          <button className="viewCartButton fixed bottom-1 right-[11rem] py-[1rem] font-bold px-4 text-center text-lg z-10 font-bold bg-black text-white rounded cursor-pointer"
             onClick={() => navigate("/cart")}>
             View Cart ({getTotalCartItems()})
           </button>
@@ -99,14 +107,14 @@ const FoodCard = ({ foodItems, restaurant }) => {
               }
             </span>
             <span className="totalRatings py-2 px-[0.3rem] border-t-[1.5px] border-black">
-              {totalRatingsString}
+              {totalRatings}
             </span>
           </div>
         </div>
         <div className="resDelivery border-2 rounded-[3px] text-left my-[0.7rem] border-black mx-auto p-4 text-base flex flex-col">
           <div className="addressInfo">
             <span className="addressTitle font-bold ">Address: </span>
-            <span className="addressString">{labels[1]?.message}</span>
+            <span className="addressString">{address}</span>
           </div>
           <div className="cityInfo">
             <span className="city font-bold">City: </span>
@@ -114,7 +122,7 @@ const FoodCard = ({ foodItems, restaurant }) => {
           </div>
           <div className="costInfo">
             <span className="cost font-bold">Cost for two: </span>
-            <span className="costString">{costForTwoMessage}</span>
+            <span className="costString">₹{costForTwo}</span>
           </div>
         </div>
 
@@ -122,20 +130,20 @@ const FoodCard = ({ foodItems, restaurant }) => {
           <div className="offerHeader m-2 pb-4 text-xl font-bold border-b-2 border-black ">Special Offers Available For You</div>
           <div className="offerCarousels my-[0.3rem] mx-0 flex items-center overflow-x-scroll no-scrollbar">
             {
-              offers.map((offer, index) => <div className="offerCarousel border-2 border-black rounded-[3px] m-[0.3rem] mx-auto cursor-pointer hover:bg-black hover:text-white font-bold p-[0.5rem] flex items-center text-nowrap text-center w-auto h-[3rem]" key={index}>{offer?.info?.header}</div>)
+              offers.map((offer, index) => <div className="offerCarousel border-2 border-black rounded-[3px] m-[0.3rem] mx-auto cursor-pointer hover:bg-black hover:text-white font-bold p-[0.5rem] flex items-center text-nowrap text-center w-auto h-[3rem]" key={index}>{offer}</div>)
             }
           </div>
         </div>
         <div className="menuItems border-2 border-black rounded-[3px] mt-[0.7rem] mx-auto mb-[0.1rem] p-[0.3rem]">
-          {menuItems?.map((items, index) => (
+          {categoryWiseFoodItems.map((food, index) => (
             <div className="categorizedItems mx-auto mb-0 py-[0.3rem]" key={index}>
               <div className="categoryTitle flex justify-center flex-col border-2 border-black rounded-[3px] text-center text-[25px] font-bold mx-auto px-[0.3rem]">
                 <Accordion
-                  title={`${items?.card?.card?.title} (${items?.card?.card?.itemCards?.length || items?.card?.card?.categories?.length})`}
+                  title={food.category}
                   content={
                     <div className="categoryItems">
-                      {items?.card?.card?.itemCards?.map((foodItem, index) => {
-                        const { name, price, defaultPrice, description, imageId, isVeg } = foodItem?.card?.info;
+                      {food.items.map((foodItem, index) => {
+                        const { description, image, name, type, price } = foodItem
                         return (
                           <div className="foodItem border-2 rounded-[3px] mt-2 mx-auto p-[0.3rem] flex items-start justify-between" key={index}>
                             <div className="foodDetails w-full p-[0.1rem] my-2 mx-0">
@@ -143,10 +151,10 @@ const FoodCard = ({ foodItems, restaurant }) => {
                               <div className="isVeg_price flex justify-between items-center">
                                 <div className="foodPrice text-xl text-center">
                                   <span className="currency">₹</span>
-                                  {price ? (price?.toString().substring(0, price?.toString().length - 2)) : (defaultPrice?.toString().substring(0, defaultPrice?.toString().length - 2))}
+                                  {price}
                                 </div>
                                 <div className="foodIsVeg m-2">
-                                  {isVeg ? <img className="h-[30px] w-[30px]" src={vegIcon} alt="veg" /> : <img className="h-[30px] w-[30px]" src={nonVegIcon} alt="non-veg" />}
+                                  {type.toLowerCase() === "veg" ? <img className="h-[30px] w-[30px]" src={vegIcon} alt="veg" /> : <img className="h-[30px] w-[30px]" src={nonVegIcon} alt="non-veg" />}
                                 </div>
                               </div>
                               <div className="foodDescription text-sm text-left">{description?.length > 300 ? (description.substring(0, 150)) : description}</div>
@@ -154,48 +162,25 @@ const FoodCard = ({ foodItems, restaurant }) => {
                             <div className="img_add  flex flex-col items-center justify-center">
                               <div className="foodImgContainer my-2 mx-auto">
                                 <img className="foodImg h-[100px] w-[150px] rounded-[5px] border-2 border-black" src={
-                                  imageId ? (food_img_url + imageId) : "https://www.pngkey.com/png/full/114-1144514_foodlogo-question-mark-food-question-mark-png.png"
+                                  image ? (food_img_url + image) : "https://www.pngkey.com/png/full/114-1144514_foodlogo-question-mark-food-question-mark-png.png"
                                 } alt="food image" />
                               </div>
                               {
-                                getItemCount(foodItem?.card?.info) > 0 ? (
+                                getItemCount(foodItem) > 0 ? (
                                   <div className="flex items-center justify-between w-full">
                                     <BadgeX
                                       className="h-[35px] w-[35px] rounded-full cursor-pointer mr-2"
-                                      onClick={() => {
-                                        dispatch(deleteFromCart(foodItem?.card?.info));
-                                        toast.error(`${foodItem?.card?.info?.name} has been deleted from cart!`);
-                                      }
-                                      }
+                                      onClick={() => handleDeleteFromCart(foodItem)}
                                     />
                                     <div className="added flex items-center justify-between my-4 w-full mx-auto cursor-pointer font-bold p-[0.3rem] text-base rounded-[3px] border-black border-2 transition-all duration-100 ease-in-out hover:bg-black hover:text-white cursor-pointer">
                                       <button className="minus tracking-[0.1rem] bg-transparent py-0 px-1"
-                                        onClick={() => {
-                                          dispatch(removeFromCart(foodItem?.card?.info))
-                                          toast.error(`${foodItem?.card?.info?.name} removed from cart!`);
-                                        }}>-</button>
-                                      <div className="count font-bold">{getItemCount(foodItem?.card?.info)}</div>
-                                      <button className="plus tracking-[0.1rem] bg-transparent py-0 px-1 cursor-pointer" onClick={() => {
-                                        const currentCount = getItemCount(foodItem?.card?.info);
-                                        if (currentCount < 3) {
-                                          dispatch(addToCart({ resId: id, foodItem: foodItem?.card?.info }));
-                                          toast.success(`${foodItem?.card?.info?.name} added to cart!`);
-                                        } else {
-                                          toast.warn(`Maximum limit reached! You can only add 3 ${foodItem?.card?.info?.name}s to the cart.`);
-                                        }
-                                      }}>+</button>
+                                        onClick={() => handleRemoveFromCart(foodItem)}>-</button>
+                                      <div className="count font-bold">{getItemCount(foodItem)}</div>
+                                      <button className="plus tracking-[0.1rem] bg-transparent py-0 px-1 cursor-pointer" onClick={() => handleAddToCart(foodItem)}>+</button>
                                     </div>
                                   </div>
                                 ) : (
-                                  <button className="add text-center block my-4 mx-auto cursor-pointer font-bold py-[0.425rem] px-2 text-sm w-full rounded-[3px] tracking-[0.1rem] transition-all duration-100 ease-in-out border-black border-2 hover:uppercase" onClick={() => {
-                                    const currentCount = getItemCount(foodItem?.card?.info);
-                                    if (currentCount < 3) {
-                                      dispatch(addToCart({ resId: id, foodItem: foodItem?.card?.info }));
-                                      toast.success(`${foodItem?.card?.info?.name} added to cart!`);
-                                    } else {
-                                      toast.warn(`Maximum limit reached! You can only add 3 quantity per item to the cart.`);
-                                    }
-                                  }}>Add</button>
+                                  <button className="add text-center block my-4 mx-auto cursor-pointer font-bold py-[0.425rem] px-2 text-sm w-full rounded-[3px] tracking-[0.1rem] transition-all duration-100 ease-in-out border-black border-2 hover:uppercase" onClick={() => handleAddToCart(foodItem)}>Add</button>
                                 )
                               }
                             </div>
@@ -211,7 +196,7 @@ const FoodCard = ({ foodItems, restaurant }) => {
             </div>
           ))}
         </div>
-      </div> */}
+      </div>
     </>
   )
 }

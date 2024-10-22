@@ -23,28 +23,29 @@ const Cart = () => {
   const accordionClass = "border-black border-2 my-2 p-[0.3rem] rounded-[3px] text-left";
 
   useEffect(() => {
-    localStorage.setItem('isLogin', isUserLoggedIn);
-  }, [isUserLoggedIn]);
-
-  useEffect(() => {
     dispatch(fetchRestaurants());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (currentUser?.uid) {
+      dispatch(fetchUserAddresses(currentUser.uid));
+    }
+  }, [currentUser, dispatch]);
+
   const handleAccordionToggle = (index) => {
-    const newAccordionState = accordionOpen.map((isOpen, i) => (i === index ? !isOpen : isOpen));
-    setAccordionOpen(newAccordionState);
+    setAccordionOpen(accordionOpen.map((isOpen, i) => i === index ? !isOpen : isOpen));
   };
 
   const getTotalCartAmount = () => {
-    const totalAmount = cart.reduce((total, item) => {
-      const itemTotal = (item.price || item.defaultPrice) * item.quantity;
-      return total + itemTotal;
-    }, 0);
-    return totalAmount / 100;
+    return cart.reduce((total, item) => {
+      const itemPrice = item.price || item.defaultPrice;
+      return total + (itemPrice * item.quantity);
+    }, 0) / 100;
   };
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
+
     if (!currentUser?.uid) {
       toast.error('Please log in to add an address');
       return;
@@ -67,12 +68,6 @@ const Cart = () => {
     }
   };
 
-  useEffect(() => {
-    if (currentUser?.uid) {
-      dispatch(fetchUserAddresses(currentUser.uid));
-    }
-  }, [currentUser, dispatch]);
-
   const handlePayment = () => {
     if (!isUserLoggedIn) {
       dispatch(setShowModal(true));
@@ -80,28 +75,27 @@ const Cart = () => {
       return;
     }
 
-    if (currentAddressSelected?.length === 0) {
+    if (!currentAddressSelected?.length) {
       toast.error('Please select a delivery address.');
       return;
     }
-    console.log(currentAddressSelected)
-    if (cart.length > 0 || (currentAddressSelected && isUserLoggedIn)) {
-      setPaymentSuccess(true);
-      dispatch(emptyCart());
-      dispatch(setCurrentAddressSelected([]));
-      toast.success('Payment successful! Thank you for your purchase.');
-    } else {
+
+    if (cart.length === 0) {
       toast.error('Your cart is empty. Please add items to your cart.');
+      return;
     }
+
+    setPaymentSuccess(true);
+    dispatch(emptyCart());
+    dispatch(setCurrentAddressSelected([]));
+    toast.success('Payment successful! Thank you for your purchase.');
   };
 
   const handleAddressSelection = (e) => {
     const selectedIndex = e.target.value;
-    if (currentAddressSelected === 0) {
+    if (selectedIndex === "") {
       dispatch(setCurrentAddressSelected([]));
-      dispatch(setCurrentAddressSelected("Select a saved address"));
-    }
-    else {
+    } else {
       const selectedAddress = userAddressList[selectedIndex];
       dispatch(setCurrentAddressSelected(selectedAddress));
     }

@@ -5,7 +5,6 @@ import { toast } from 'react-toastify';
 import { useLocation } from 'react-router-dom';
 
 const AddFood = () => {
-
   const dispatch = useDispatch();
   const location = useLocation();
   const { restaurant } = location.state;
@@ -15,6 +14,7 @@ const AddFood = () => {
     foodImage: '',
     foodDescription: '',
     foodType: '',
+    foodPrice: '',
   });
 
   const handleChange = (e) => {
@@ -35,6 +35,7 @@ const AddFood = () => {
       image: formData.foodImage,
       description: formData.foodDescription,
       type: formData.foodType,
+      price: formData.foodPrice,
     };
 
     try {
@@ -45,6 +46,7 @@ const AddFood = () => {
         foodImage: '',
         foodDescription: '',
         foodType: '',
+        foodPrice: '',
       });
       toast.success('Food item added successfully!');
     } catch (error) {
@@ -87,7 +89,7 @@ const AddFood = () => {
           <input
             type="text"
             name="foodImage"
-            placeholder="Enter food image URL"
+            placeholder="Enter food image ID"
             value={formData.foodImage}
             onChange={handleChange}
             required
@@ -120,6 +122,19 @@ const AddFood = () => {
             <option value="Veg">Veg</option>
             <option value="Non-Veg">Non-Veg</option>
           </select>
+        </div>
+
+        <div>
+          <label className="block font-semibold mb-1">Food Price:</label>
+          <input
+            type="number"
+            name="foodPrice"
+            placeholder="Enter food price"
+            value={formData.foodPrice}
+            onChange={handleChange}
+            required
+            className="border-2 border-gray-300 rounded p-2 w-full"
+          />
         </div>
 
         <div>
