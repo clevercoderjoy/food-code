@@ -1,10 +1,10 @@
 for every user, there should be
-  unique credentials
-  unique address list
+  unique credentials - done
+  unique address list - done
   both should be editable
 
-if role is admin, show add restaurant and add menu
-if role is not admin do not show the above
+if role is admin, show add restaurant and add menu - done
+if role is not admin do not show the above - done
 
 for each user admin can keep the track of orders with 3 states:
   pending
@@ -12,4 +12,13 @@ for each user admin can keep the track of orders with 3 states:
   delivered
 
 user Profile page
-firebase setup PRIORITY
+firebase setup PRIORITY - done
+
+add, edit food menu page 
+delete menu
+delete restaurant - done
+profile page
+test cases
+order status
+make address editable
+should be able to delete address

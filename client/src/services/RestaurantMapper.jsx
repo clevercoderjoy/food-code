@@ -2,18 +2,13 @@ import { useSelector } from "react-redux";
 import RestaurantCard from "../components/RestaurantCard";
 import ShimmerHome from "../components/shimmerHome";
 import { selectRestaurantsLoading } from "../slice/RestaurantsSlice";
-import Modal from "../components/Modal";
-import { selectCurrentUser, selectShowModal } from "../slice/UserSlice";
+import { selectCurrentUser } from "../slice/UserSlice";
 import AddCard from "../components/AddCard";
 
 const RestaurantMapper = ({ restaurants }) => {
-  const showModal = useSelector(selectShowModal);
   const shimmerCardCount = Array.from({ length: 12 }, () => "");
   const restaurantsLoading = useSelector(selectRestaurantsLoading);
   const currentUser = useSelector(selectCurrentUser);
-
-  console.log("🚀 ~ file: RestaurantMapper.jsx:15 ~ RestaurantMapper ~ currentUser:", currentUser);
-
   return (
     <div className="container mx-auto py-8">
       <div className="restaurantCards flex flex-grow flex-wrap items-center justify-center">
@@ -36,7 +31,6 @@ const RestaurantMapper = ({ restaurants }) => {
           </>
         )}
       </div>
-      {showModal && <Modal />}
     </div>
   );
 };

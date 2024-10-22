@@ -1,8 +1,15 @@
-import { useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addOrUpdateRestaurant } from "../slice/RestaurantsSlice";
+import { toast } from "react-toastify";
 
 const AddRestaurant = () => {
+  const location = useLocation();
+  const restaurantData = location.state?.restaurantData;
+
   const [restaurantDetails, setRestaurantDetails] = useState({
+    id: restaurantData ? restaurantData.id : "",
     name: "",
     ratings: "",
     totalRatings: "",
@@ -17,6 +24,29 @@ const AddRestaurant = () => {
     offers: "",
   });
 
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (restaurantData) {
+      setRestaurantDetails({
+        id: restaurantData.id,
+        name: restaurantData.info.name || "",
+        ratings: restaurantData.info.avgRating || "",
+        totalRatings: restaurantData.info.totalRatings || "",
+        img: restaurantData.info.cloudinaryImageId || "",
+        deliveryTime: restaurantData.info.deliveryTime || "",
+        costForTwo: restaurantData.info.costForTwo || "",
+        address: restaurantData.info.address || "",
+        area: restaurantData.info.area || "",
+        city: restaurantData.info.city || "",
+        cuisines: restaurantData.info.cuisines || "",
+        discount: restaurantData.info.discount || "",
+        offers: restaurantData.info.offers || "",
+      });
+    }
+  }, [restaurantData]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setRestaurantDetails((prevDetails) => ({
@@ -28,18 +58,20 @@ const AddRestaurant = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("/api/restaurants", restaurantDetails);
-      console.log("Restaurant added successfully:", response.data);
+      await dispatch(addOrUpdateRestaurant(restaurantDetails)).unwrap();
+      toast.success("Restaurant added/updated successfully!");
+      navigate("/restaurants");
     } catch (error) {
-      console.error("Error adding restaurant:", error);
+      console.error("Error adding/updating restaurant:", error);
+      toast.error("Failed to add/update restaurant. Please try again.");
     }
   };
 
-  console.log(restaurantDetails);
-
   return (
     <div className="adminContainer p-4 m-8 border-2 border-black rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Add New Restaurant</h2>
+      <h2 className="text-2xl font-bold mb-4">
+        {restaurantData ? "Edit Restaurant" : "Add New Restaurant"}
+      </h2>
       <form onSubmit={handleSubmit}>
         <div className="flex gap-4 mb-4">
           <div className="flex-1">
@@ -54,7 +86,7 @@ const AddRestaurant = () => {
             />
           </div>
           <div className="flex-1">
-            <label className="block font-semibold mb-1">Image URL:</label>
+            <label className="block font-semibold mb-1">Image ID:</label>
             <input
               type="text"
               name="img"
@@ -173,7 +205,6 @@ const AddRestaurant = () => {
               name="discount"
               value={restaurantDetails.discount}
               onChange={handleChange}
-              required
               className="border-2 border-gray-300 rounded p-2 w-full"
             />
           </div>
@@ -195,7 +226,7 @@ const AddRestaurant = () => {
             type="submit"
             className="submitButton bg-black text-white py-2 rounded hover:bg-gray-800 transition duration-200 w-full"
           >
-            Add Restaurant
+            {restaurantData ? "Update Restaurant" : "Add Restaurant"}
           </button>
         </div>
       </form>

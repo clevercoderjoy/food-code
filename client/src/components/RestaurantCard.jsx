@@ -1,24 +1,35 @@
 import { useNavigate } from "react-router-dom";
 import { CDN_URL } from "../utils/constants";
 import { showEllipsis } from "../utils/helperFunctions";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { FaPen } from 'react-icons/fa';
+import { IoFastFood } from "react-icons/io5";
 import { selectCurrentUser } from "../slice/UserSlice";
+import { TiDelete } from "react-icons/ti";
+import { deleteRestaurant } from "../slice/RestaurantsSlice";
+
+
 
 const RestaurantCard = ({ restaurant }) => {
 
+  console.log("🚀 ~ file: RestaurantCard.jsx:14 ~ RestaurantCard ~ restaurant:", restaurant);
   const {
-    cloudinaryImageId,
-    cuisines,
-    id,
-    name,
+    address,
+    area,
     avgRating,
-    sla: { deliveryTime },
+    city,
+    cloudinaryImageId,
     costForTwo,
-    aggregatedDiscountInfoV3,
+    cuisines,
+    deliveryTime,
+    discount,
+    offers,
+    totalRatings,
+    name,
   } = restaurant.info;
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const cuisine = cuisines.length < 2
     ? cuisines.map((cuisine) => `${cuisine} `).join("")
@@ -32,12 +43,50 @@ const RestaurantCard = ({ restaurant }) => {
   const currentUser = useSelector(selectCurrentUser);
   const isAdmin = currentUser?.role === 'admin';
 
+  const handleEditClick = (event) => {
+    event.stopPropagation();
+    navigate("/restaurants/addRestaurant", {
+      state: { restaurantData: restaurant }
+    });
+  };
+
+  const handleDeleteClick = (event) => {
+    event.stopPropagation();
+    const confirmed = window.confirm("Are you sure you want to delete this restaurant?");
+    if (confirmed) {
+      dispatch(deleteRestaurant(restaurant.id));
+    }
+  }
+
   return (
     <div className="restaurantContainer w-[240px] h-[375px] mt-4 mx-2 mb-4 rounded-lg border-2 border-black shadow-md transition-transform duration-200 ease-in-out relative hover:scale-105 cursor-pointer">
       {isAdmin && (
-        <div className="absolute top-0 right-0 z-10 bg-white p-4 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-200">
-          <FaPen className="text-gray-700 hover:text-gray-900 cursor-pointer" />
-        </div>
+        <>
+          <div className="relative" onClick={handleEditClick}>
+            <div className="absolute top-0 left-0 z-10 bg-white p-4 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-200 group">
+              <FaPen className="text-gray-700 hover:text-gray-900 cursor-pointer" />
+              <span className="absolute left-0 top-[-18px] transform -translate-y-1/2 whitespace-nowrap bg-black text-white text-sm p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                Edit Restaurant
+              </span>
+            </div>
+          </div>
+          <div className="relative" onClick={handleDeleteClick}>
+            <div className="absolute bottom-[-357px] left-[11.5rem] text-2xl z-10 bg-white p-1 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-200 group">
+              <TiDelete className="text-gray-700 hover:text-gray-900 cursor-pointer" />
+              <span className="absolute left-0 top-[-18px] transform -translate-y-1/2 whitespace-nowrap bg-black text-white text-sm p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                Delete Restaurant
+              </span>
+            </div>
+          </div>
+          <div className="relative">
+            <div className="absolute top-0 right-0 z-10 bg-white p-4 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-200 group">
+              <IoFastFood className="text-gray-700 hover:text-gray-900 cursor-pointer" />
+              <span className="absolute left-0 top-[-18px] transform -translate-y-1/2 whitespace-nowrap bg-black text-white text-sm p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                Edit Food Menu
+              </span>
+            </div>
+          </div>
+        </>
       )}
       <div className="restaurantImgContainer m-auto text-center p-2">
         <img
@@ -47,7 +96,7 @@ const RestaurantCard = ({ restaurant }) => {
         />
       </div>
       <div className="restaurantDetailsContainer my-2 mx-2 border-t-2 border-black pt-2">
-        <div className="restaurantName text-lg font-bold truncate">
+        <div className="restaurantName text-left text-lg font-bold truncate">
           {name.length > 15 ? `${name.substring(0, 15)}...` : name}
         </div>
         <div className="restaurantFoodDetails flex justify-between items-center text-xs my-1">
@@ -63,17 +112,16 @@ const RestaurantCard = ({ restaurant }) => {
           }
           <span className="time">{deliveryTime} mins</span>
           <span className="separator font-bold">|</span>
-          <span className="avgPrice">{costForTwo}</span>
+          <span className="avgPrice">₹{costForTwo} for two</span>
         </div>
         <div className="restaurantCuisines text-left px-1 text-sm">
           <span>{cuisine}</span>
         </div>
         <div className="
         s my-2 mx-0 rounded-md font-bold text-sm flex items-center justify-center text-center">
-          {aggregatedDiscountInfoV3?.header === undefined &&
-            aggregatedDiscountInfoV3?.subHeader === undefined
+          {discount === undefined
             ? "Offers Coming Soon"
-            : `${aggregatedDiscountInfoV3?.header || ""} ${aggregatedDiscountInfoV3?.subHeader || ""}`}
+            : discount}
         </div>
       </div>
       <button

@@ -1,46 +1,109 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { restaurantsDataApi } from "../utils/constants";
-import axios from "axios";
+import { collection, getDocs, addDoc, updateDoc, doc, getFirestore, deleteDoc } from "firebase/firestore";
+import app from "../firebase/config";
 
-const loadState = () => {
-  try {
-    const serializedState = localStorage.getItem('restaurantsState');
-    if (serializedState === null) {
-      return undefined;
-    }
-    return JSON.parse(serializedState);
-  } catch (err) {
-    return undefined;
-  }
+const db = getFirestore(app);
+
+const processRestaurantData = (restaurantData) => {
+  const processedCuisines = Array.isArray(restaurantData.cuisines)
+    ? restaurantData.cuisines
+    : typeof restaurantData.cuisines === 'string'
+      ? restaurantData.cuisines.split(',').map(cuisine => cuisine.trim())
+      : [];
+
+  const processedOffers = restaurantData.offers
+    ? (Array.isArray(restaurantData.offers)
+      ? restaurantData.offers
+      : restaurantData.offers.split(',').map(offer => offer.trim()))
+    : [];
+
+  return {
+    name: restaurantData.name,
+    avgRating: parseFloat(restaurantData.ratings) || 0,
+    totalRatings: parseInt(restaurantData.totalRatings) || 0,
+    cloudinaryImageId: restaurantData.img,
+    deliveryTime: parseInt(restaurantData.deliveryTime) || 30,
+    costForTwo: parseInt(restaurantData.costForTwo) || 0,
+    address: restaurantData.address || '',
+    area: restaurantData.area || '',
+    city: restaurantData.city || '',
+    cuisines: processedCuisines,
+    discount: restaurantData.discount || '',
+    offers: processedOffers,
+  };
 };
 
 export const fetchRestaurants = createAsyncThunk(
   "/restaurants/fetchRestaurants",
-  async () => {
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get(restaurantsDataApi);
-      const restaurantUrls = response?.data || [];
-
-      const restaurantData = await Promise.all(
-        restaurantUrls.map(async (restaurantObj) => {
-          const restaurantResponse = await axios.get(restaurantObj.url);
-          return restaurantResponse?.data || null;
-        })
-      );
-      return restaurantData.filter(Boolean);
-    } catch (e) {
-      console.error("Failed to fetch restaurants:", e);
-      return [];
+      const restaurantsRef = collection(db, "restaurants");
+      const querySnapshot = await getDocs(restaurantsRef);
+      const restaurants = [];
+      querySnapshot.forEach((doc) => {
+        restaurants.push({ id: doc.id, ...doc.data() });
+      });
+      return restaurants;
+    } catch (error) {
+      console.error("Error fetching restaurants:", error);
+      return rejectWithValue(error.message);
     }
   }
 );
 
-const initialState = loadState() || {
+export const addOrUpdateRestaurant = createAsyncThunk(
+  "/restaurants/addOrUpdateRestaurant",
+  async (restaurantData, { rejectWithValue }) => {
+    try {
+      const restaurantsRef = collection(db, "restaurants");
+      const restaurantDocRef = doc(restaurantsRef, restaurantData.id);
+
+      const processedData = processRestaurantData(restaurantData);
+
+      const restaurantSnapshot = await getDocs(restaurantsRef);
+      const exists = restaurantSnapshot.docs.some(doc => doc.id === restaurantData.id);
+
+      if (exists) {
+        await updateDoc(restaurantDocRef, {
+          info: processedData,
+        });
+        return { id: restaurantData.id, info: processedData };
+      } else {
+        const docRef = await addDoc(restaurantsRef, {
+          info: processedData,
+          createdAt: new Date().toISOString(),
+        });
+        return { id: docRef.id, info: processedData };
+      }
+    } catch (error) {
+      console.error("Error adding/updating restaurant:", error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const deleteRestaurant = createAsyncThunk(
+  "/restaurants/deleteRestaurant",
+  async (id, { rejectWithValue }) => {
+    console.log(id)
+    try {
+      const restaurantDocRef = doc(db, "restaurants", id);
+      await deleteDoc(restaurantDocRef);
+      return id; 
+    } catch (error) {
+      console.error("Error deleting restaurant:", error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+const initialState = {
   restaurants: [],
   filteredRestaurants: [],
   restaurantsLoading: true,
   searchText: '',
   starFilter: 0,
+  error: null,
 };
 
 export const restaurantsSlice = createSlice({
@@ -50,30 +113,67 @@ export const restaurantsSlice = createSlice({
     resetFilter: (state) => {
       state.filteredRestaurants = state.restaurants;
       state.searchText = "";
-      saveState(state);
+      state.starFilter = 0;
     },
     setSearchText: (state, action) => {
       state.searchText = action.payload;
-      state.filteredRestaurants = applyFilters(state.restaurants, state.searchText, state.starFilter);
-      saveState(state);
+      state.filteredRestaurants = applyFilters(
+        state.restaurants,
+        state.searchText,
+        state.starFilter
+      );
     },
     setStarFilter: (state, action) => {
       state.starFilter = action.payload;
-      state.filteredRestaurants = applyFilters(state.restaurants, state.searchText, state.starFilter);
-      saveState(state);
+      state.filteredRestaurants = applyFilters(
+        state.restaurants,
+        state.searchText,
+        state.starFilter
+      );
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchRestaurants.pending, (state) => {
         state.restaurantsLoading = true;
+        state.error = null;
       })
       .addCase(fetchRestaurants.fulfilled, (state, action) => {
         state.restaurants = action.payload;
         state.filteredRestaurants = action.payload;
         state.restaurantsLoading = false;
-        saveState(state);
+        state.error = null;
       })
+      .addCase(fetchRestaurants.rejected, (state, action) => {
+        state.restaurantsLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(addOrUpdateRestaurant.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(addOrUpdateRestaurant.fulfilled, (state, action) => {
+        const index = state.restaurants.findIndex(res => res.id === action.payload.id);
+        if (index !== -1) {
+          state.restaurants[index] = action.payload;
+        } else {
+          state.restaurants.push(action.payload);
+        }
+        state.filteredRestaurants = applyFilters(
+          state.restaurants,
+          state.searchText,
+          state.starFilter
+        );
+      })
+      .addCase(addOrUpdateRestaurant.rejected, (state, action) => {
+        state.error = action.payload;
+      })
+      .addCase(deleteRestaurant.fulfilled, (state, action) => {
+        state.restaurants = state.restaurants.filter(res => res.id !== action.payload);
+        state.filteredRestaurants = state.filteredRestaurants.filter(res => res.id !== action.payload);
+      })
+      .addCase(deleteRestaurant.rejected, (state, action) => {
+        state.error = action.payload;
+      });
   },
 });
 
@@ -85,15 +185,6 @@ const applyFilters = (restaurants, searchText, starFilter) => {
   });
 };
 
-const saveState = (state) => {
-  try {
-    const serializedState = JSON.stringify(state);
-    localStorage.setItem('restaurantsState', serializedState);
-  } catch (e) {
-    console.log(e);
-  }
-};
-
 export const { setSearchText, setStarFilter, resetFilter } = restaurantsSlice.actions;
 
 export const selectRestaurantsLoading = (state) => state.restaurants.restaurantsLoading;
@@ -101,5 +192,6 @@ export const selectRestaurants = (state) => state.restaurants.restaurants;
 export const selectFilteredRestaurants = (state) => state.restaurants.filteredRestaurants;
 export const selectSearchText = (state) => state.restaurants.searchText;
 export const selectStarFilter = (state) => state.restaurants.starFilter;
+export const selectError = (state) => state.restaurants.error;
 
 export default restaurantsSlice.reducer;

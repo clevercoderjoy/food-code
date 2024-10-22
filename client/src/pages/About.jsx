@@ -1,10 +1,6 @@
-import { useSelector } from "react-redux";
-import Modal from "../components/Modal";
 import clevercoderjoy from "/images/clevercoderjoy.jpg";
-import { selectShowModal } from "../slice/UserSlice";
 
 const About = () => {
-  const showModal = useSelector(selectShowModal);
 
   return (
     <>
@@ -37,9 +33,6 @@ const About = () => {
             The project, FoodCode, is a food ordering and restaurant listing platform. It provides users with an intuitive interface to browse and order from a wide variety of restaurants. The platform includes advanced filtering options, restaurant details, and an easy-to-use checkout system. My role in this project focuses on building a responsive, seamless UI for both restaurant owners and customers, ensuring smooth performance across devices.
           </p>
         </div>
-        {showModal && (
-          <Modal />
-        )}
       </div>
     </>
   );

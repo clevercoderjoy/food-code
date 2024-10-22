@@ -4,9 +4,8 @@ import { addToCart, emptyCart, removeFromCart, selectCart, selectCurrResId } fro
 import { fetchRestaurants, selectFilteredRestaurants } from "../slice/RestaurantsSlice";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import Modal from "../components/Modal";
 import { addUserAddress, fetchUserAddresses, selectCurrentAddressSelected, selectUserAddressList, setCurrentAddressSelected } from "../slice/UserAddressSlice";
-import { selectCurrentUser, selectIsUserLoggedIn, selectShowModal, setShowModal } from "../slice/UserSlice";
+import { selectCurrentUser, selectIsUserLoggedIn, setShowModal } from "../slice/UserSlice";
 
 const Cart = () => {
   const cart = useSelector(selectCart);
@@ -16,7 +15,6 @@ const Cart = () => {
   const userAddressList = useSelector(selectUserAddressList);
   const currentAddressSelected = useSelector(selectCurrentAddressSelected);
   const isUserLoggedIn = useSelector(selectIsUserLoggedIn);
-  const showModal = useSelector(selectShowModal);
   const currentUser = useSelector(selectCurrentUser);
   const [accordionOpen, setAccordionOpen] = useState([false, false, false, false]);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
@@ -376,9 +374,6 @@ const Cart = () => {
       <h2 className="text-4xl font-bold">The Cart Page</h2>
       <div className="cartContainer m-[0.3rem] p-[0.3rem] border-black border-2 rounded-[3px]">
         {renderCartContent()}
-        {showModal && (
-          <Modal />
-        )}
       </div>
     </>
   );
