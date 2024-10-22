@@ -1,13 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { addFood } from '../slice/FoodSlice';
+import { addOrUpdateFood } from '../slice/FoodSlice';
 import { toast } from 'react-toastify';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const AddFood = () => {
   const dispatch = useDispatch();
   const location = useLocation();
-  const { restaurant } = location.state;
+  const navigate = useNavigate();
+
+  const editMode = location.state?.editMode || false;
+  const existingFood = location.state?.foodItem;
+  const restaurant = location.state?.restaurant;
+  const restaurantId = editMode ? existingFood?.restaurantId : restaurant?.id;
+
   const [formData, setFormData] = useState({
     foodName: '',
     foodCategory: '',
@@ -16,6 +22,19 @@ const AddFood = () => {
     foodType: '',
     foodPrice: '',
   });
+
+  useEffect(() => {
+    if (editMode && existingFood) {
+      setFormData({
+        foodName: existingFood.name || '',
+        foodCategory: existingFood.category || '',
+        foodImage: existingFood.image || '',
+        foodDescription: existingFood.description || '',
+        foodType: existingFood.type || '',
+        foodPrice: existingFood.price || '',
+      });
+    }
+  }, [editMode, existingFood]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,7 +48,7 @@ const AddFood = () => {
     e.preventDefault();
 
     const foodItem = {
-      restaurantId: restaurant.id,
+      restaurantId: restaurantId,
       name: formData.foodName,
       category: formData.foodCategory,
       image: formData.foodImage,
@@ -38,25 +57,26 @@ const AddFood = () => {
       price: formData.foodPrice,
     };
 
+    if (editMode) {
+      foodItem.id = existingFood.id;
+    }
+
     try {
-      await dispatch(addFood(foodItem));
-      setFormData({
-        foodName: '',
-        foodCategory: '',
-        foodImage: '',
-        foodDescription: '',
-        foodType: '',
-        foodPrice: '',
-      });
-      toast.success('Food item added successfully!');
+      await dispatch(addOrUpdateFood(foodItem));
+      toast.success(editMode ? 'Food item updated successfully!' : 'Food item added successfully!');
+      navigate(-1);
     } catch (error) {
-      toast.error('Error adding food item.');
+      toast.error(editMode ? 'Error updating food item.' : 'Error adding food item.');
     }
   };
 
+
+
   return (
     <div className="adminContainer p-4 m-8 border-2 border-black rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Add New Food Item</h2>
+      <h2 className="text-2xl font-bold mb-4">
+        {editMode ? 'Edit Food Item' : 'Add New Food Item'}
+      </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block font-semibold mb-1">Food Name:</label>
@@ -105,7 +125,7 @@ const AddFood = () => {
             value={formData.foodDescription}
             onChange={handleChange}
             required
-            className="border-2 border-gray-300 rounded p-2 w-full"
+            className="border-2 border-gray-300 rounded p-2 w-full h-32"
           />
         </div>
 
@@ -137,12 +157,19 @@ const AddFood = () => {
           />
         </div>
 
-        <div>
+        <div className="flex space-x-4">
           <button
             type="submit"
-            className="bg-black text-white py-2 rounded hover:bg-gray-800 transition duration-200 w-full"
+            className="bg-black text-white py-2 px-4 rounded hover:bg-gray-800 transition duration-200 flex-1"
           >
-            Add Food
+            {editMode ? 'Update Food' : 'Add Food'}
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="border-2 border-black py-2 px-4 rounded hover:bg-gray-100 transition duration-200"
+          >
+            Cancel
           </button>
         </div>
       </form>

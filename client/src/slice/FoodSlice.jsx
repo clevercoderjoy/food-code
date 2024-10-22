@@ -1,5 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { collection, query, where, getDocs, addDoc, getFirestore } from 'firebase/firestore';
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  addDoc,
+  getFirestore,
+  doc,
+  updateDoc,
+  deleteDoc,
+} from 'firebase/firestore';
 import app from '../firebase/config';
 
 const db = getFirestore(app);
@@ -17,6 +27,16 @@ const foodSlice = createSlice({
       state.loading = false;
       state.error = null;
     },
+    updateFoodItem: (state, action) => {
+      const index = state.foodItems.findIndex(item => item.id === action.payload.id);
+      if (index !== -1) {
+        state.foodItems[index] = { ...state.foodItems[index], ...action.payload };
+      } else {
+        state.foodItems.push(action.payload);
+      }
+      state.loading = false;
+      state.error = null;
+    },
     setFoodItems: (state, action) => {
       state.foodItems = action.payload;
       state.loading = false;
@@ -29,6 +49,11 @@ const foodSlice = createSlice({
     setError: (state, action) => {
       state.loading = false;
       state.error = action.payload;
+    },
+    deleteFoodItem: (state, action) => {
+      state.foodItems = state.foodItems.filter(item => item.id !== action.payload);
+      state.loading = false;
+      state.error = null;
     },
   },
 });
@@ -57,29 +82,53 @@ export const fetchFoodItemsByRestaurantId = (restaurantId) => async (dispatch) =
   }
 };
 
-export const addFood = (foodItem) => async (dispatch) => {
-  if (!foodItem.restaurantId) {
-    dispatch(setError('Restaurant ID is required'));
-    throw new Error('Restaurant ID is required');
+export const addOrUpdateFood = (foodItem) => async (dispatch) => {
+  try {
+    dispatch(setLoading());
+    const foodItemRef = collection(db, 'foodItems');
+
+    if (foodItem.id) {
+      const foodDocRef = doc(db, 'foodItems', foodItem.id);
+      await updateDoc(foodDocRef, {
+        ...foodItem,
+        updatedAt: new Date().toISOString(),
+      });
+      dispatch(updateFoodItem(foodItem));
+    } else {
+      const docRef = await addDoc(foodItemRef, {
+        ...foodItem,
+        createdAt: new Date().toISOString(),
+      });
+      dispatch(addFoodItem({ id: docRef.id, ...foodItem }));
+    }
+  } catch (error) {
+    console.error('Error in addOrUpdateFood:', error);
+    const errorMessage = error.message || 'Error adding/updating food item';
+    dispatch(setError(errorMessage));
+    
+    throw new Error(errorMessage);
+  }
+};
+
+export const deleteFoodItemById = (foodItemId) => async (dispatch) => {
+  if (!foodItemId) {
+    dispatch(setError('Food Item ID is required'));
+    throw new Error('Food Item ID is required');
   }
 
   try {
     dispatch(setLoading());
-    const foodItemRef = collection(db, 'foodItems');
-    const docRef = await addDoc(foodItemRef, {
-      ...foodItem,
-      createdAt: new Date().toISOString(),
-    });
-    dispatch(addFoodItem({ id: docRef.id, ...foodItem }));
-    return docRef.id;
+    const foodItemRef = doc(db, 'foodItems', foodItemId);
+    await deleteDoc(foodItemRef);
+    dispatch(deleteFoodItem(foodItemId));
   } catch (error) {
-    const errorMessage = error.message || 'Error adding food item';
+    const errorMessage = error.message || 'Error deleting food item';
     dispatch(setError(errorMessage));
     throw new Error(errorMessage);
   }
 };
 
-export const { addFoodItem, setFoodItems, setLoading, setError } = foodSlice.actions;
+export const { addFoodItem, updateFoodItem, setFoodItems, deleteFoodItem, setLoading, setError } = foodSlice.actions;
 export const selectFoodItems = (state) => state.food.foodItems;
 
 export default foodSlice.reducer;

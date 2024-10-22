@@ -46,7 +46,7 @@ const RestaurantCard = ({ restaurant }) => {
 
   const handleEditMenuClick = () => {
     navigate("/restaurants/addFood", {
-      state: { restaurant: restaurant }
+      state: { restaurant: restaurant, editMode: false, }
     });
   }
 

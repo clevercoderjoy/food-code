@@ -1,4 +1,4 @@
-for every user, there should be
+for every user, there should be unique creds
   both should be editable
 
 
@@ -8,11 +8,9 @@ for each user admin can keep the track of orders with 3 states:
   delivered
 
 user Profile page
-
-add, edit food menu page 
-delete menu
-profile page
-test cases
 order status
+
+test cases
+
 make address editable
 should be able to delete address
