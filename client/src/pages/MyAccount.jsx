@@ -14,9 +14,25 @@ const MyAccount = () => {
   const currentUser = useSelector(selectCurrentUser);
   const [userOrders, setUserOrders] = useState([]);
 
-  console.log("🚀 ~ file: MyAccount.jsx:17 ~ MyAccount ~ userOrders:", userOrders);
+  console.log("Current User:", currentUser);
+  console.log("User Orders:", userOrders);
 
   const isAdmin = currentUser && currentUser.role === 'admin';
+
+  const sortOrdersByStatus = (orders) => {
+    const statusPriority = {
+      placed: 1,
+      confirmed: 2,
+      'out for delivery': 3,
+      delivered: 4,
+    };
+
+    return orders.sort((a, b) => {
+      const statusA = statusPriority[a.status] || 5;
+      const statusB = statusPriority[b.status] || 5;
+      return statusA - statusB;
+    });
+  };
 
   useEffect(() => {
     const fetchOrders = () => {
@@ -37,7 +53,10 @@ const MyAccount = () => {
         querySnapshot.forEach((doc) => {
           orders.push({ id: doc.id, ...doc.data() });
         });
-        setUserOrders(orders);
+
+        const sortedOrders = sortOrdersByStatus(orders);
+        console.log("Sorted Orders:", sortedOrders);
+        setUserOrders(sortedOrders);
       });
       return () => unsubscribe();
     };
@@ -77,7 +96,7 @@ const MyAccount = () => {
                     onChange={(e) => handleUpdateStatus(order.id, e.target.value)}
                     className="mt-2"
                   >
-                    <option value="pending">Pending</option>
+                    <option value="placed">Placed</option>
                     <option value="confirmed">Confirmed</option>
                     <option value="out for delivery">Out for Delivery</option>
                     <option value="delivered">Delivered</option>
