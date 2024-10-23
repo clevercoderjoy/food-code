@@ -12,5 +12,6 @@ order status
 
 test cases
 
+fix cart page
 make address editable
 should be able to delete address
