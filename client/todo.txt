@@ -11,9 +11,3 @@ user Profile page
 order status
 
 test cases
-
-fix cart page
-make address editable
-should be able to delete address
-
-protect routes

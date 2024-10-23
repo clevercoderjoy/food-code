@@ -8,6 +8,8 @@ import Cart from "../pages/Cart";
 import RestaurantPage from "../pages/RestaurantPage";
 import AddRestaurant from "../pages/AddRestaurant";
 import AddFood from "../pages/AddFood";
+import AdminRoute from "./AdminRoutes";
+import MyAccount from "../pages/MyAccount";
 
 export const router = createBrowserRouter([
   {
@@ -31,11 +33,11 @@ export const router = createBrowserRouter([
           },
           {
             path: "addRestaurant",
-            element: <AddRestaurant />
+            element: <AdminRoute element={<AddRestaurant />} />
           },
           {
             path: "addFood",
-            element: <AddFood />
+            element: <AdminRoute element={<AddFood />} />
           },
         ]
       },
@@ -46,6 +48,10 @@ export const router = createBrowserRouter([
       {
         path: "cart",
         element: <Cart />,
+      },
+      {
+        path: "myAccount",
+        element: <MyAccount />
       },
       {
         path: "*",

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { addUserAddress, fetchUserAddresses, selectCurrentAddressSelected, selectUserAddressList, setCurrentAddressSelected } from "../slice/UserAddressSlice";
 import { selectCurrentUser, selectIsUserLoggedIn, setShowModal } from "../slice/UserSlice";
+import { createOrder } from "../slice/OrderSlice";
 
 const Cart = () => {
   const cart = useSelector(selectCart);
@@ -19,7 +20,8 @@ const Cart = () => {
   const [accordionOpen, setAccordionOpen] = useState([false, false, false, false]);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
 
-  const currentRestaurant = restaurants.find((restaurant) => restaurant?.info?.id === currResId);
+  const currentRestaurant = restaurants.find((restaurant) => restaurant.id === currResId);
+
   const accordionClass = "border-black border-2 my-2 p-[0.3rem] rounded-[3px] text-left";
 
   useEffect(() => {
@@ -68,14 +70,14 @@ const Cart = () => {
     }
   };
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     if (!isUserLoggedIn) {
       dispatch(setShowModal(true));
       toast.error('Please log in to proceed with payment and select a delivery address.');
       return;
     }
 
-    if (!currentAddressSelected?.length) {
+    if (!currentAddressSelected) {
       toast.error('Please select a delivery address.');
       return;
     }
@@ -85,10 +87,31 @@ const Cart = () => {
       return;
     }
 
-    setPaymentSuccess(true);
-    dispatch(emptyCart());
-    dispatch(setCurrentAddressSelected([]));
-    toast.success('Payment successful! Thank you for your purchase.');
+    try {
+      const orderData = {
+        items: cart,
+        totalAmount: getTotalCartAmount(),
+        deliveryAddress: currentAddressSelected,
+        restaurant: {
+          id: currentRestaurant.id,
+          name: currentRestaurant.info.name,
+          address: currentRestaurant.info.address
+        },
+        orderDate: new Date().toISOString()
+      };
+
+      await dispatch(createOrder({
+        userId: currentUser.uid,
+        orderData
+      })).unwrap();
+
+      setPaymentSuccess(true);
+      dispatch(emptyCart());
+      dispatch(setCurrentAddressSelected([]));
+      toast.success('Payment successful! Thank you for your purchase.');
+    } catch (error) {
+      toast.error('Failed to process order: ' + error.message);
+    }
   };
 
   const handleAddressSelection = (e) => {
@@ -99,6 +122,30 @@ const Cart = () => {
       const selectedAddress = userAddressList[selectedIndex];
       dispatch(setCurrentAddressSelected(selectedAddress));
     }
+  };
+
+  const getItemCount = (food) => {
+    if (!food?.id) return 0;
+    const itemInCart = cart.find((item) => item.id === food.id);
+    return itemInCart ? itemInCart.quantity : 0;
+  };
+
+  const handleAddToCart = (foodItem) => {
+    const currentCount = getItemCount(foodItem);
+    if (currentCount < 3) {
+      dispatch(addToCart({
+        resId: currentRestaurant.id || currentRestaurant.info.name.toLowerCase(),
+        foodItem
+      }));
+      toast.success(`${foodItem.name} added to cart!`);
+    } else {
+      toast.warn(`Maximum limit reached! You can only add 3 quantity per item to the cart.`);
+    }
+  };
+
+  const handleRemoveFromCart = (foodItem) => {
+    dispatch(removeFromCart(foodItem));
+    toast.error(`${foodItem.name} removed from cart!`);
   };
 
   const renderCartContent = () => {
@@ -137,18 +184,18 @@ const Cart = () => {
               {currentRestaurant?.info?.avgRating ? `⭐ ${currentRestaurant?.info?.avgRating}` : ""}
             </span>
             <span className="totalRatings py-2 px-[0.3rem] border-t-[1.5px] w-full border-black">
-              {currentRestaurant?.info?.totalRatingsString}
+              {currentRestaurant?.info?.totalRatings}
             </span>
           </div>
         </div>
         <div className="resDelivery border-2 rounded-[3px] text-left my-[0.7rem] border-black mx-auto p-4 text-base flex flex-col">
           <div className="addressInfo">
             <span className="addressTitle font-bold ">Address: </span>
-            <span className="addressString">{currentRestaurant?.cta?.data[2]?.card.card.info.labels[1].message}</span>
+            <span className="addressString">{currentRestaurant?.info?.address}</span>
           </div>
           <div className="cityInfo">
             <span className="city font-bold">City: </span>
-            <span className="city">{currentRestaurant?.cta?.data[2]?.card.card.info.city}</span>
+            <span className="city">{currentRestaurant?.info?.city}</span>
           </div>
           <div className="costInfo">
             <span className="cost font-bold">Cost for two: </span>
@@ -162,9 +209,9 @@ const Cart = () => {
               content={
                 <div className="resOffers border-2 border-black rounded-[3px] p-[0.3rem]">
                   <div className="offerCarousels my-[0.3rem] mx-0 flex items-center overflow-x-scroll no-scrollbar">
-                    {currentRestaurant?.cta?.data?.[3]?.card?.card?.gridElements?.infoWithStyle?.offers?.map((offer, index) => (
+                    {currentRestaurant?.info?.offers?.map((offer, index) => (
                       <div className="offerCarousel border-2 border-black rounded-[3px] m-[0.3rem] mx-auto cursor-pointer hover:bg-black hover:text-white font-bold p-[0.5rem] flex items-center text-nowrap text-center w-auto h-[3rem]" key={index}>
-                        {offer?.info?.header}
+                        {offer}
                       </div>
                     ))}
                   </div>
@@ -318,14 +365,15 @@ const Cart = () => {
                 <div className="cartItems my-4">
                   {cart.map((item) => (
                     <div className="cartItemContainer flex justify-between items-center my-2 border-black border-2 py-[0.3rem] px-2 rounded-[3px] text-lg" key={item?.id}>
+                      {console.log(item)}
                       <div className="cartItemName w-[300px] font-bold text-left">{item?.name}</div>
                       <div className="flex items-center justify-center gap-8">
                         <div className="cartItemQuantityButtons flex gap-6 font-bold border-black border-2 px-4 py-1 rounded-[3px] my-2">
-                          <button className="quantityButtons cursor-pointer" onClick={() => dispatch(removeFromCart(item))}>-</button>
+                          <button className="quantityButtons cursor-pointer" onClick={() => handleRemoveFromCart(item)}>-</button>
                           <div className="cartItemQuantity">{item?.quantity}</div>
-                          <button className="quantityButtons cursor-pointer" onClick={() => dispatch(addToCart({ resId: currentRestaurant?.info?.id, foodItem: item }))}>+</button>
+                          <button className="quantityButtons cursor-pointer" onClick={() => handleAddToCart(item)}>+</button>
                         </div>
-                        <div className="cartItemPrice font-bold text-2xl">₹{item?.price ? (item?.price * item?.quantity) / 100 : (item?.defaultPrice * item?.quantity) / 100}</div>
+                        <div className="cartItemPrice font-bold text-2xl">₹{item?.price}</div>
                       </div>
                     </div>
                   ))}

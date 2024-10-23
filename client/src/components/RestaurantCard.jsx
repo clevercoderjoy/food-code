@@ -11,8 +11,6 @@ import { deleteRestaurant } from "../slice/RestaurantsSlice";
 
 
 const RestaurantCard = ({ restaurant }) => {
-
-  console.log("🚀 ~ file: RestaurantCard.jsx:14 ~ RestaurantCard ~ restaurant:", restaurant);
   const {
     avgRating,
     cloudinaryImageId,

@@ -14,11 +14,7 @@ import { deleteFoodItemById } from "../slice/FoodSlice";
 
 const FoodCard = ({ foodItems, restaurant }) => {
 
-  console.log("🚀 ~ file: FoodCard.jsx:15 ~ FoodCard ~ restaurant:", restaurant);
-
-
   const [accordionOpen, setAccordionOpen] = useState(0);
-  console.log("🚀 ~ file: FoodCard.jsx:15 ~ FoodCard ~ foodItems:", foodItems);
   const dispatch = useDispatch();
   const cart = useSelector(selectCart);
   const navigate = useNavigate();
@@ -37,8 +33,6 @@ const FoodCard = ({ foodItems, restaurant }) => {
     category,
     items: groupedFoodItems[category],
   }));
-
-  console.log("groupedArray", groupedFoodItems);
 
   const { address, areaName, avgRating, city, costForTwo, cuisines, name, offers, totalRatings } = restaurant.info;
 
@@ -60,7 +54,7 @@ const FoodCard = ({ foodItems, restaurant }) => {
     const currentCount = getItemCount(foodItem);
     if (currentCount < 3) {
       dispatch(addToCart({
-        resId: restaurant.id || `${restaurant.info.name}`.replace(/\s+/g, '-').toLowerCase(),
+        resId: restaurant.id || restaurant.info.name.toLowerCase(),
         foodItem
       }));
       toast.success(`${foodItem.name} added to cart!`);
