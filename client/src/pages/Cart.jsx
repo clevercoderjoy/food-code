@@ -77,8 +77,9 @@ const Cart = () => {
       return;
     }
 
-    if (!currentAddressSelected) {
-      toast.error('Please select a delivery address.');
+    if (!currentAddressSelected || Object.keys(currentAddressSelected).length === 0) {
+      toast.error('Please select a delivery address before proceeding with payment.');
+      setAccordionOpen(accordionOpen.map((isOpen, i) => (i === 1 ? true : isOpen)));
       return;
     }
 
@@ -97,7 +98,8 @@ const Cart = () => {
           name: currentRestaurant.info.name,
           address: currentRestaurant.info.address
         },
-        orderDate: new Date().toISOString()
+        orderDate: new Date().toISOString(),
+        status: 'placed'
       };
 
       await dispatch(createOrder({
@@ -107,7 +109,7 @@ const Cart = () => {
 
       setPaymentSuccess(true);
       dispatch(emptyCart());
-      dispatch(setCurrentAddressSelected([]));
+      dispatch(setCurrentAddressSelected(null));
       toast.success('Payment successful! Thank you for your purchase.');
     } catch (error) {
       toast.error('Failed to process order: ' + error.message);
@@ -365,7 +367,6 @@ const Cart = () => {
                 <div className="cartItems my-4">
                   {cart.map((item) => (
                     <div className="cartItemContainer flex justify-between items-center my-2 border-black border-2 py-[0.3rem] px-2 rounded-[3px] text-lg" key={item?.id}>
-                      {console.log(item)}
                       <div className="cartItemName w-[300px] font-bold text-left">{item?.name}</div>
                       <div className="flex items-center justify-center gap-8">
                         <div className="cartItemQuantityButtons flex gap-6 font-bold border-black border-2 px-4 py-1 rounded-[3px] my-2">

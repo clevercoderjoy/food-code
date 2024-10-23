@@ -1,41 +1,15 @@
-
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { collection, addDoc, getDocs, query, where, getFirestore } from "firebase/firestore";
-import app from "../firebase/config"
+import { collection, getDocs, query, where, getFirestore, doc, updateDoc, setDoc, onSnapshot } from "firebase/firestore";
+import app from "../firebase/config";
 
 const db = getFirestore(app);
 
-export const createOrder = createAsyncThunk(
-  "orders/createOrder",
-  async ({ userId, orderData }, { rejectWithValue }) => {
-    try {
-      const orderToSave = {
-        ...orderData,
-        userId,
-        orderDate: new Date().toISOString(),
-        status: "placed",
-      };
-
-      const ordersRef = collection(db, "orders");
-      const docRef = await addDoc(ordersRef, orderToSave);
-
-      return {
-        id: docRef.id,
-        ...orderToSave
-      };
-    } catch (error) {
-      return rejectWithValue(error.message);
-    }
-  }
-);
-
-export const fetchUserOrders = createAsyncThunk(
-  "orders/fetchUserOrders",
-  async (userId, { rejectWithValue }) => {
+export const fetchAllOrders = createAsyncThunk(
+  "orders/fetchAllOrders",
+  async (_, { rejectWithValue }) => {
     try {
       const ordersRef = collection(db, "orders");
-      const q = query(ordersRef, where("userId", "==", userId));
-      const querySnapshot = await getDocs(q);
+      const querySnapshot = await getDocs(ordersRef);
 
       const orders = [];
       querySnapshot.forEach((doc) => {
@@ -49,6 +23,54 @@ export const fetchUserOrders = createAsyncThunk(
   }
 );
 
+export const updateOrderStatus = createAsyncThunk(
+  "orders/updateOrderStatus",
+  async ({ orderId, status }, { rejectWithValue }) => {
+    try {
+      const orderRef = doc(db, "orders", orderId);
+      await updateDoc(orderRef, { status });
+
+      return { orderId, status };
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const createOrder = createAsyncThunk(
+  "orders/createOrder",
+  async (orderData, { rejectWithValue }) => {
+    try {
+      const ordersRef = collection(db, "orders");
+      const newOrderData = {
+        ...orderData,
+        status: orderData.status || "placed",
+      };
+
+      const newOrderRef = doc(ordersRef);
+      await setDoc(newOrderRef, newOrderData);
+
+      return { id: newOrderRef.id, ...newOrderData };
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const listenForUserOrders = (userId, callback) => {
+  return () => {
+    const ordersRef = collection(db, "orders");
+    const q = query(ordersRef, where("userId", "==", userId));
+    return onSnapshot(q, (querySnapshot) => {
+      const orders = [];
+      querySnapshot.forEach((doc) => {
+        orders.push({ id: doc.id, ...doc.data() });
+      });
+      callback(orders);
+    });
+  };
+};
+
 const ordersSlice = createSlice({
   name: "orders",
   initialState: {
@@ -59,27 +81,48 @@ const ordersSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(fetchAllOrders.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAllOrders.fulfilled, (state, action) => {
+        state.loading = false;
+        state.ordersList = action.payload.filter(order => order.status !== "delivered");
+      })
+      .addCase(fetchAllOrders.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateOrderStatus.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateOrderStatus.fulfilled, (state, action) => {
+        state.loading = false;
+        const { orderId, status } = action.payload;
+        if (status === "delivered") {
+          state.ordersList = state.ordersList.filter(order => order.id !== orderId);
+        } else {
+          state.ordersList = state.ordersList.map(order =>
+            order.id === orderId ? { ...order, status } : order
+          );
+        }
+      })
+      .addCase(updateOrderStatus.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
       .addCase(createOrder.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(createOrder.fulfilled, (state, action) => {
         state.loading = false;
-        state.ordersList.push(action.payload);
+        if (action.payload.status !== "delivered") {
+          state.ordersList.push(action.payload);
+        }
       })
       .addCase(createOrder.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(fetchUserOrders.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchUserOrders.fulfilled, (state, action) => {
-        state.loading = false;
-        state.ordersList = action.payload;
-      })
-      .addCase(fetchUserOrders.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

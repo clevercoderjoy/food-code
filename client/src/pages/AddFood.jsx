@@ -64,7 +64,6 @@ const AddFood = () => {
     try {
       await dispatch(addOrUpdateFood(foodItem));
       toast.success(editMode ? 'Food item updated successfully!' : 'Food item added successfully!');
-      navigate(-1);
     } catch (error) {
       toast.error(editMode ? 'Error updating food item.' : 'Error adding food item.');
     }

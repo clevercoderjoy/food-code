@@ -1,13 +1,1 @@
-for every user, there should be unique creds
-  both should be editable
-
-
-for each user admin can keep the track of orders with 3 states:
-  pending
-  confirmed
-  delivered
-
-user Profile page
-order status
-
 test cases

@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectIsUserLoggedIn, setCurrentUser, setIsUserLoggedIn, setShowModal } from '../slice/UserSlice';
+import { selectIsUserLoggedIn, signUp, logIn, setShowModal, setIsUserLoggedIn } from '../slice/UserSlice';
 import { toast } from "react-toastify";
 import { FaTimes } from 'react-icons/fa';
-import app from "../firebase/config";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 
 const Modal = () => {
   const dispatch = useDispatch();
@@ -24,38 +22,38 @@ const Modal = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const auth = getAuth(app);
 
-    try {
-      if (!isLogin) {
-        if (formData.password !== formData.confirmPassword) {
-          setError('Passwords do not match');
-          return;
-        }
-        const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-        dispatch(setCurrentUser({
-          email: userCredential.user.email,
-          uid: userCredential.user.uid,
-          role: formData.isAdmin ? 'admin' : 'user'
-        }));
-        toast.success('Signup successful! You are now logged in.');
-      } else {
-        const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
-        dispatch(setCurrentUser({
-          email: userCredential.user.email,
-          uid: userCredential.user.uid,
-        }));
-        toast.success('Login successful!');
-        console.log("userCredential", userCredential);
+    if (!isLogin) {
+      if (formData.password !== formData.confirmPassword) {
+        setError('Passwords do not match');
+        return;
       }
-      dispatch(setIsUserLoggedIn(true));
-      dispatch(setShowModal(false));
-    } catch (error) {
-      toast.error(error.message);
-      setError(error.message);
+      try {
+        await dispatch(signUp({
+          email: formData.email,
+          password: formData.password,
+          isAdmin: formData.isAdmin
+        })).unwrap();
+        toast.success('Signup successful! You are now logged in.');
+      } catch (error) {
+        toast.error(error.message);
+        setError(error.message);
+      }
+    } else {
+      try {
+        await dispatch(logIn({
+          email: formData.email,
+          password: formData.password
+        })).unwrap();
+        toast.success('Login successful!');
+      } catch (error) {
+        toast.error(error.message);
+        setError(error.message);
+      }
     }
 
     setFormData({ email: '', password: '', confirmPassword: '', isAdmin: false });
+    dispatch(setShowModal(false));
   };
 
   const toggleLoginMode = () => {

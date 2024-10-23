@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { selectCart } from "../slice/CartSlice";
 import {
@@ -27,6 +27,7 @@ const Header = ({ cartItems }) => {
   const currentUser = useSelector(selectCurrentUser);
   const isUserLoggedIn = useSelector(selectIsUserLoggedIn);
   const showOptions = isOptionsVisible ? "visible" : "hidden";
+  const navigate = useNavigate();
 
   const authButtonClass = "text-center block border-black border-2 text-white font-bold py-[0.1rem] pl-[0.3rem] pr-[0.3rem] mr-1 transition-all duration-500 ease-in-out rounded-[3px] tracking-widest w-28 h-9";
 
@@ -38,7 +39,6 @@ const Header = ({ cartItems }) => {
     const auth = getAuth(app);
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // User is signed in, fetch user details from Firestore
         const db = getFirestore(app);
         const userDocRef = doc(db, 'users', user.uid);
         const userDoc = await getDoc(userDocRef);
@@ -49,7 +49,7 @@ const Header = ({ cartItems }) => {
             email: user.email,
             uid: user.uid,
             username: userData.username,
-            role: userData.role, // Save user role
+            role: userData.role,
           }));
         }
 
@@ -59,7 +59,6 @@ const Header = ({ cartItems }) => {
           btnTxt: "Logout"
         });
       } else {
-        // User is signed out
         dispatch(clearUserDetails());
         dispatch(setIsUserLoggedIn(false));
         setBtnState({
@@ -69,7 +68,7 @@ const Header = ({ cartItems }) => {
       }
     });
 
-    return () => unsubscribe(); // Cleanup subscription on unmount
+    return () => unsubscribe();
   }, [dispatch, authButtonClass]);
 
   const handleAuthHover = () => {
@@ -147,7 +146,7 @@ const Header = ({ cartItems }) => {
               onMouseLeave={handleAuthLeave}
             >
               <span className={`autoOption ${autOptionClass}`}>{currentUser?.username}</span>
-              <span className={`autoOption ${autOptionClass}`}>My Account</span>
+              <span className={`autoOption ${autOptionClass}`} onClick={() => navigate("/myAccount")}>My Account</span>
               <span className={`autoOption ${autOptionClass}`} onClick={handleAuth}>Log Out</span>
             </div>
           )}
