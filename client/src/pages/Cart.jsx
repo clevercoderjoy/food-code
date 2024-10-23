@@ -40,9 +40,9 @@ const Cart = () => {
 
   const getTotalCartAmount = () => {
     return cart.reduce((total, item) => {
-      const itemPrice = item.price || item.defaultPrice;
+      const itemPrice = item.price;
       return total + (itemPrice * item.quantity);
-    }, 0) / 100;
+    }, 0);
   };
 
   const handleFormSubmit = async (event) => {
@@ -374,7 +374,7 @@ const Cart = () => {
                           <div className="cartItemQuantity">{item?.quantity}</div>
                           <button className="quantityButtons cursor-pointer" onClick={() => handleAddToCart(item)}>+</button>
                         </div>
-                        <div className="cartItemPrice font-bold text-2xl">₹{item?.price}</div>
+                        <div className="cartItemPrice font-bold text-2xl">₹{item?.price * item?.quantity}</div>
                       </div>
                     </div>
                   ))}

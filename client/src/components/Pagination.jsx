@@ -1,5 +1,3 @@
-import React from 'react';
-
 const Pagination = ({ currentPage, setCurrentPage, totalItems, disableButtons }) => {
   const handleClick = (page) => {
     if (!disableButtons) {

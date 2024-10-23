@@ -15,7 +15,7 @@ const Home = () => {
         <h3>
           <p className="text-lg text-gray-600 my-8 font-bold w-1/2 mx-auto border-4 border-black p-6 rounded-md">
             Discover the best dishes from your favorite local restaurants, delivered straight to your door.
-            From comforting classics to new culinary experiences, we've got something for everyone.
+            From comforting classics to new culinary experiences, we&apos;ve got something for everyone.
           </p>
           <p className="text-xl text-red-500 font-semibold">
             Order now and enjoy exclusive deals on your favorite meals!

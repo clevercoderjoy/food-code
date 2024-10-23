@@ -26,7 +26,7 @@ const RestaurantCard = ({ restaurant }) => {
 
   const cuisine = cuisines.length < 2
     ? cuisines.map((cuisine) => `${cuisine} `).join("")
-    : showEllipsis(cuisines.join(" "), 2);
+    : showEllipsis(cuisines.join(", "), 2);
 
   const openRestaurantMenu = () => {
     navigate(`/restaurants/${restaurant.id}`, {
@@ -48,8 +48,7 @@ const RestaurantCard = ({ restaurant }) => {
     });
   }
 
-  const handleDeleteClick = (event) => {
-    event.stopPropagation();
+  const handleDeleteClick = () => {
     const confirmed = window.confirm("Are you sure you want to delete this restaurant?");
     if (confirmed) {
       dispatch(deleteRestaurant(restaurant.id));
@@ -88,7 +87,7 @@ const RestaurantCard = ({ restaurant }) => {
       )}
       <div className="restaurantImgContainer m-auto text-center p-2">
         <img
-          src={CDN_URL + cloudinaryImageId}
+          src={CDN_URL + cloudinaryImageId || cloudinaryImageId}
           alt="food-image"
           className="restaurantImg w-full object-cover h-[160px] rounded-lg"
         />

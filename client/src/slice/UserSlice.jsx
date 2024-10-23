@@ -8,7 +8,6 @@ const initialState = {
   showModal: false,
 };
 
-
 export const signUp = createAsyncThunk(
   'user/signUp',
   async ({ email, password, isAdmin }, { dispatch }) => {
@@ -39,7 +38,6 @@ export const logIn = createAsyncThunk(
     return user;
   }
 );
-
 
 const userSlice = createSlice({
   name: 'user',
