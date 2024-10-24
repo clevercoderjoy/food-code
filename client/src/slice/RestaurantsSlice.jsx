@@ -34,7 +34,7 @@ const processRestaurantData = (restaurantData) => {
 
 export const fetchRestaurants = createAsyncThunk(
   "/restaurants/fetchRestaurants",
-  async (_, { rejectWithValue }) => {
+  async () => {
     try {
       const restaurantsRef = collection(db, "restaurants");
       const querySnapshot = await getDocs(restaurantsRef);
@@ -45,14 +45,14 @@ export const fetchRestaurants = createAsyncThunk(
       return restaurants;
     } catch (error) {
       console.error("Error fetching restaurants:", error);
-      return rejectWithValue(error.message);
+      console.log(error.message);
     }
   }
 );
 
 export const addOrUpdateRestaurant = createAsyncThunk(
   "/restaurants/addOrUpdateRestaurant",
-  async (restaurantData, { rejectWithValue }) => {
+  async (restaurantData) => {
     try {
       const restaurantsRef = collection(db, "restaurants");
 
@@ -72,7 +72,7 @@ export const addOrUpdateRestaurant = createAsyncThunk(
       }
     } catch (error) {
       console.error("Error adding/updating restaurant:", error);
-      return rejectWithValue(error.message);
+      console.log(error.message);
     }
   }
 );
@@ -80,7 +80,7 @@ export const addOrUpdateRestaurant = createAsyncThunk(
 
 export const deleteRestaurant = createAsyncThunk(
   "/restaurants/deleteRestaurant",
-  async (id, { rejectWithValue }) => {
+  async (id) => {
     console.log(id)
     try {
       const restaurantDocRef = doc(db, "restaurants", id);
@@ -88,7 +88,6 @@ export const deleteRestaurant = createAsyncThunk(
       return id;
     } catch (error) {
       console.error("Error deleting restaurant:", error);
-      return rejectWithValue(error.message);
     }
   }
 );

@@ -17,8 +17,7 @@ export const fetchUserAddresses = createAsyncThunk(
 
 export const addUserAddress = createAsyncThunk(
   'userAddress/addAddress',
-  async ({ userId, address }, { rejectWithValue }) => {
-    if (!userId) return rejectWithValue('User ID is required');
+  async ({ userId, address }) => {
     try {
       const addressesRef = collection(db, 'userAddressList');
       const docRef = await addDoc(addressesRef, {
@@ -28,7 +27,6 @@ export const addUserAddress = createAsyncThunk(
       return { id: docRef.id, ...address };
     } catch (error) {
       console.error('Firestore error:', error);
-      return rejectWithValue(error.message);
     }
   }
 );

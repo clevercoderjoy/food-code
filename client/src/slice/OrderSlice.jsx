@@ -6,7 +6,7 @@ const db = getFirestore(app);
 
 export const fetchAllOrders = createAsyncThunk(
   "orders/fetchAllOrders",
-  async (_, { rejectWithValue }) => {
+  async () => {
     try {
       const ordersRef = collection(db, "orders");
       const querySnapshot = await getDocs(ordersRef);
@@ -18,28 +18,28 @@ export const fetchAllOrders = createAsyncThunk(
 
       return orders;
     } catch (error) {
-      return rejectWithValue(error.message);
+      console.log(error)
     }
   }
 );
 
 export const updateOrderStatus = createAsyncThunk(
   "orders/updateOrderStatus",
-  async ({ orderId, status }, { rejectWithValue }) => {
+  async ({ orderId, status }) => {
     try {
       const orderRef = doc(db, "orders", orderId);
       await updateDoc(orderRef, { status });
 
       return { orderId, status };
     } catch (error) {
-      return rejectWithValue(error.message);
+      console.log(error.message);
     }
   }
 );
 
 export const createOrder = createAsyncThunk(
   "orders/createOrder",
-  async (orderData, { rejectWithValue }) => {
+  async (orderData) => {
     try {
       const ordersRef = collection(db, "orders");
       const newOrderData = {
@@ -52,7 +52,7 @@ export const createOrder = createAsyncThunk(
 
       return { id: newOrderRef.id, ...newOrderData };
     } catch (error) {
-      return rejectWithValue(error.message);
+      console.log(error.message);
     }
   }
 );
