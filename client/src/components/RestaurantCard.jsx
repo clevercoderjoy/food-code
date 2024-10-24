@@ -122,7 +122,7 @@ const RestaurantCard = ({ restaurant }) => {
         </div>
       </div>
       <button
-        className="view text-center block cursor-pointer font-bold p-2 text-sm rounded-md tracking-wide border-black border-2 transition-all duration-100 ease-in-out absolute bottom-2 left-1/2 transform -translate-x-1/2 hover:uppercase"
+        className="view text-center block cursor-pointer font-bold p-2 text-sm rounded-md tracking-wide border-black border-2 transition-all duration-100 ease-in-out absolute bottom-2 bg-white left-1/2 transform -translate-x-1/2 hover:uppercase"
         onClick={openRestaurantMenu}
       >
         Quick View

@@ -181,12 +181,9 @@ const Cart = () => {
               {currentRestaurant?.info?.areaName}
             </span>
           </div>
-          <div className="resRatings flex flex-col m-[0.3rem] border-[1.5px] w-[125px] border-black rounded-[3px] items-center p-[0.3rem] text-sm font-bold">
+          <div className="resRatings flex flex-col m-[0.3rem] border-2 border-black rounded-[3px] items-center p-[0.3rem] bg-white text-sm font-bold">
             <span className="starRatings py-2 px-[0.3rem]">
-              {currentRestaurant?.info?.avgRating ? `⭐ ${currentRestaurant?.info?.avgRating}` : ""}
-            </span>
-            <span className="totalRatings py-2 px-[0.3rem] border-t-[1.5px] w-full border-black">
-              {currentRestaurant?.info?.totalRatings}
+              Ratings: ⭐{currentRestaurant?.info?.avgRating}
             </span>
           </div>
         </div>
@@ -212,7 +209,7 @@ const Cart = () => {
                 <div className="resOffers border-2 border-black rounded-[3px] p-[0.3rem]">
                   <div className="offerCarousels my-[0.3rem] mx-0 flex items-center overflow-x-scroll no-scrollbar">
                     {currentRestaurant?.info?.offers?.map((offer, index) => (
-                      <div className="offerCarousel border-2 border-black rounded-[3px] m-[0.3rem] mx-auto cursor-pointer hover:bg-black hover:text-white font-bold p-[0.5rem] flex items-center text-nowrap text-center w-auto h-[3rem]" key={index}>
+                      <div className="offerCarousel border-2 border-black bg-white rounded-[3px] m-[0.3rem] mx-auto cursor-pointer hover:bg-black hover:text-white font-bold p-[0.5rem] flex items-center text-nowrap text-center w-auto h-[3rem]" key={index}>
                         {offer}
                       </div>
                     ))}
@@ -362,19 +359,19 @@ const Cart = () => {
         <div className="accordionContainer">
           <div className={`${accordionClass} offerSelector font-bold`}>
             <Accordion
-              title="Your Order:"
+              title="Your Order(s):"
               content={
-                <div className="cartItems my-4">
+                <div className="cartItems mt-4">
                   {cart.map((item) => (
-                    <div className="cartItemContainer flex justify-between items-center my-2 border-black border-2 py-[0.3rem] px-2 rounded-[3px] text-lg" key={item?.id}>
-                      <div className="cartItemName w-[300px] font-bold text-left">{item?.name}</div>
+                    <div className="cartItemContainer flex justify-between items-center border-black border-2 py-[0.3rem] px-2 rounded-[3px] mt-3 h-[5rem] text-lg gap-5" key={item?.id}>
+                      <div className="cartItemName w-[300px] font-bold text-left text-xl">{item?.name}</div>
                       <div className="flex items-center justify-center gap-8">
-                        <div className="cartItemQuantityButtons flex gap-6 font-bold border-black border-2 px-4 py-1 rounded-[3px] my-2">
+                        <div className="cartItemQuantityButtons flex gap-6 font-bold border-black border-2 px-4 py-1 rounded-[3px] my-2 bg-white">
                           <button className="quantityButtons cursor-pointer" onClick={() => handleRemoveFromCart(item)}>-</button>
                           <div className="cartItemQuantity">{item?.quantity}</div>
                           <button className="quantityButtons cursor-pointer" onClick={() => handleAddToCart(item)}>+</button>
                         </div>
-                        <div className="cartItemPrice font-bold text-2xl">₹{item?.price * item?.quantity}</div>
+                        <div className="cartItemPrice font-bold text-2xl w-[5rem] text-right mr-2">₹{item?.price * item?.quantity}</div>
                       </div>
                     </div>
                   ))}
@@ -396,7 +393,7 @@ const Cart = () => {
                     <span>₹{getTotalCartAmount()}</span>
                   </div>
                   <button
-                    className="flex items-center justify-center border-black border-2 mx-auto mt-4 px-8 text-xl rounded py-4 hover:bg-black hover:text-white"
+                    className="flex items-center justify-center border-black border-2 mx-auto mt-4 px-8 bg-white text-xl rounded py-4 hover:bg-black hover:text-white"
                     onClick={handlePayment}
                   >
                     Pay Now

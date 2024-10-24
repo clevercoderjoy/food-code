@@ -10,14 +10,24 @@
   box-sizing: border-box;
   font-family: "Space Mono", monospace;
 }
+
+body {
+  background: radial-gradient(circle at 10% 20%, rgba(255, 182, 193, 0.7) 0.1%, rgba(173, 216, 230, 0.6) 50%, rgba(211, 211, 211, 0.7) 100%);
+}
+
+
 @layer utilities {
+
   /* Hide scrollbar for Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
   /* Hide scrollbar for IE, Edge and Firefox */
   .no-scrollbar {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
   }
 }

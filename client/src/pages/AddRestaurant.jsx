@@ -12,7 +12,6 @@ const AddRestaurant = () => {
     id: restaurantData ? restaurantData.id : "",
     name: "",
     ratings: "",
-    totalRatings: "",
     img: "",
     deliveryTime: "",
     costForTwo: "",
@@ -33,7 +32,6 @@ const AddRestaurant = () => {
         id: restaurantData.id,
         name: restaurantData.info.name || "",
         ratings: restaurantData.info.avgRating || "",
-        totalRatings: restaurantData.info.totalRatings || "",
         img: restaurantData.info.cloudinaryImageId || "",
         deliveryTime: restaurantData.info.deliveryTime || "",
         costForTwo: restaurantData.info.costForTwo || "",
@@ -75,7 +73,7 @@ const AddRestaurant = () => {
       <form onSubmit={handleSubmit}>
         <div className="flex gap-4 mb-4">
           <div className="flex-1">
-            <label className="block font-semibold mb-1">Restaurant Name:</label>
+            <label className="block font-semibold mb-1 text-left">Restaurant Name:</label>
             <input
               type="text"
               name="name"
@@ -86,7 +84,7 @@ const AddRestaurant = () => {
             />
           </div>
           <div className="flex-1">
-            <label className="block font-semibold mb-1">Image ID:</label>
+            <label className="block font-semibold mb-1 text-left">Image ID:</label>
             <input
               type="text"
               name="img"
@@ -100,7 +98,7 @@ const AddRestaurant = () => {
 
         <div className="flex gap-4 mb-4">
           <div className="flex-1">
-            <label className="block font-semibold mb-1">Ratings:</label>
+            <label className="block font-semibold mb-1 text-left">Ratings:</label>
             <input
               type="number"
               name="ratings"
@@ -114,18 +112,7 @@ const AddRestaurant = () => {
             />
           </div>
           <div className="flex-1">
-            <label className="block font-semibold mb-1">Total Ratings:</label>
-            <input
-              type="number"
-              name="totalRatings"
-              value={restaurantDetails.totalRatings}
-              onChange={handleChange}
-              required
-              className="border-2 border-gray-300 rounded p-2 w-full"
-            />
-          </div>
-          <div className="flex-1">
-            <label className="block font-semibold mb-1">Delivery Time (in minutes):</label>
+            <label className="block font-semibold mb-1 text-left">Delivery Time (in minutes):</label>
             <input
               type="number"
               name="deliveryTime"
@@ -136,7 +123,7 @@ const AddRestaurant = () => {
             />
           </div>
           <div className="flex-1">
-            <label className="block font-semibold mb-1">Cost for Two:</label>
+            <label className="block font-semibold mb-1 text-left">Cost for Two:</label>
             <input
               type="number"
               name="costForTwo"
@@ -149,7 +136,7 @@ const AddRestaurant = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block font-semibold mb-1">Address:</label>
+          <label className="block font-semibold mb-1 text-left">Address:</label>
           <input
             type="text"
             name="address"
@@ -162,7 +149,7 @@ const AddRestaurant = () => {
 
         <div className="flex gap-4 mb-4">
           <div className="flex-1">
-            <label className="block font-semibold mb-1">Area:</label>
+            <label className="block font-semibold mb-1 text-left">Area:</label>
             <input
               type="text"
               name="area"
@@ -173,7 +160,7 @@ const AddRestaurant = () => {
             />
           </div>
           <div className="flex-1">
-            <label className="block font-semibold mb-1">City:</label>
+            <label className="block font-semibold mb-1 text-left">City:</label>
             <input
               type="text"
               name="city"
@@ -187,7 +174,7 @@ const AddRestaurant = () => {
 
         <div className="flex gap-4 mb-4">
           <div className="flex-1">
-            <label className="block font-semibold mb-1">Cuisines (comma separated):</label>
+            <label className="block font-semibold mb-1 text-left">Cuisines (comma separated):</label>
             <input
               type="text"
               name="cuisines"
@@ -199,7 +186,7 @@ const AddRestaurant = () => {
             />
           </div>
           <div className="flex-1">
-            <label className="block font-semibold mb-1">Discount:</label>
+            <label className="block font-semibold mb-1 text-left">Discount:</label>
             <input
               type="text"
               name="discount"
@@ -209,7 +196,7 @@ const AddRestaurant = () => {
             />
           </div>
           <div className="flex-1">
-            <label className="block font-semibold mb-1">Offers (comma separated):</label>
+            <label className="block font-semibold mb-1 text-left">Offers (comma separated):</label>
             <input
               type="text"
               name="offers"

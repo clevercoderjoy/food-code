@@ -20,7 +20,6 @@ const processRestaurantData = (restaurantData) => {
   return {
     name: restaurantData.name,
     avgRating: parseFloat(restaurantData.ratings) || 0,
-    totalRatings: parseInt(restaurantData.totalRatings) || 0,
     cloudinaryImageId: restaurantData.img,
     deliveryTime: parseInt(restaurantData.deliveryTime) || 30,
     costForTwo: parseInt(restaurantData.costForTwo) || 0,
@@ -68,7 +67,6 @@ export const addOrUpdateRestaurant = createAsyncThunk(
       } else {
         const docRef = await addDoc(restaurantsRef, {
           info: processedData,
-          createdAt: new Date().toISOString(),
         });
         return { id: docRef.id, info: processedData };
       }

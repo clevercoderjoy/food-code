@@ -24,7 +24,6 @@ export const addUserAddress = createAsyncThunk(
       const docRef = await addDoc(addressesRef, {
         ...address,
         userId,
-        createdAt: new Date().toISOString(),
       });
       return { id: docRef.id, ...address };
     } catch (error) {

@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { collection, getDocs, query, where, getFirestore, doc, updateDoc, setDoc, onSnapshot } from "firebase/firestore";
+import { collection, getDocs, getFirestore, doc, updateDoc, setDoc } from "firebase/firestore";
 import app from "../firebase/config";
 
 const db = getFirestore(app);
@@ -56,20 +56,6 @@ export const createOrder = createAsyncThunk(
     }
   }
 );
-
-export const listenForUserOrders = (userId, callback) => {
-  return () => {
-    const ordersRef = collection(db, "orders");
-    const q = query(ordersRef, where("userId", "==", userId));
-    return onSnapshot(q, (querySnapshot) => {
-      const orders = [];
-      querySnapshot.forEach((doc) => {
-        orders.push({ id: doc.id, ...doc.data() });
-      });
-      callback(orders);
-    });
-  };
-};
 
 const ordersSlice = createSlice({
   name: "orders",

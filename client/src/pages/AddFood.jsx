@@ -64,6 +64,14 @@ const AddFood = () => {
     try {
       await dispatch(addOrUpdateFood(foodItem));
       toast.success(editMode ? 'Food item updated successfully!' : 'Food item added successfully!');
+      setFormData({
+        foodName: '',
+        foodCategory: '',
+        foodImage: '',
+        foodDescription: '',
+        foodType: '',
+        foodPrice: '',
+      });
     } catch (error) {
       toast.error(editMode ? 'Error updating food item.' : 'Error adding food item.');
     }
@@ -78,7 +86,7 @@ const AddFood = () => {
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block font-semibold mb-1">Food Name:</label>
+          <label className="block font-semibold mb-1 text-left ">Food Name:</label>
           <input
             type="text"
             name="foodName"
@@ -91,7 +99,7 @@ const AddFood = () => {
         </div>
 
         <div>
-          <label className="block font-semibold mb-1">Food Category:</label>
+          <label className="block font-semibold mb-1 text-left ">Food Category:</label>
           <input
             type="text"
             name="foodCategory"
@@ -104,7 +112,7 @@ const AddFood = () => {
         </div>
 
         <div>
-          <label className="block font-semibold mb-1">Food Image URL:</label>
+          <label className="block font-semibold mb-1 text-left ">Food Image URL:</label>
           <input
             type="text"
             name="foodImage"
@@ -117,19 +125,18 @@ const AddFood = () => {
         </div>
 
         <div>
-          <label className="block font-semibold mb-1">Food Description:</label>
+          <label className="block font-semibold text-left mb-1">Food Description:</label>
           <textarea
             name="foodDescription"
             placeholder="Enter food description"
             value={formData.foodDescription}
             onChange={handleChange}
-            required
             className="border-2 border-gray-300 rounded p-2 w-full h-32"
           />
         </div>
 
         <div>
-          <label className="block font-semibold mb-1">Food Type:</label>
+          <label className="block font-semibold mb-1 text-left ">Food Type:</label>
           <select
             name="foodType"
             value={formData.foodType}
@@ -144,7 +151,7 @@ const AddFood = () => {
         </div>
 
         <div>
-          <label className="block font-semibold mb-1">Food Price:</label>
+          <label className="block font-semibold mb-1 text-left ">Food Price:</label>
           <input
             type="number"
             name="foodPrice"

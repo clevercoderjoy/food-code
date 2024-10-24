@@ -34,7 +34,7 @@ const FoodCard = ({ foodItems, restaurant }) => {
     items: groupedFoodItems[category],
   }));
 
-  const { address, areaName, avgRating, city, costForTwo, cuisines, name, offers, totalRatings } = restaurant.info;
+  const { address, areaName, avgRating, city, costForTwo, cuisines, name, offers } = restaurant.info;
 
   const handleAccordionToggle = (index) => {
     setAccordionOpen(accordionOpen === index ? null : index);
@@ -100,7 +100,7 @@ const FoodCard = ({ foodItems, restaurant }) => {
     <>
       <div className="menuContainer my-2 mx-[0.3rem] p-[0.3rem] border-2 border-black rounded-[3px]">
         {cart.length > 0 && (
-          <button className="viewCartButton fixed bottom-1 right-[11rem] py-[1rem] font-bold px-4 text-center text-lg z-10 font-bold bg-black text-white rounded cursor-pointer"
+          <button className="viewCartButton fixed bottom-1 bg-white text-black right-[11rem] py-[1rem] font-bold px-4 text-center text-lg z-10 font-bold bg-black border-black border-2 hover:uppercase rounded cursor-pointer"
             onClick={() => navigate("/cart")}>
             View Cart ({getTotalCartItems()})
           </button>
@@ -119,14 +119,9 @@ const FoodCard = ({ foodItems, restaurant }) => {
               {areaName}
             </span>
           </div>
-          <div className="resRatings flex flex-col m-[0.3rem] border-[1.5px] border-black rounded-[3px] items-center p-[0.3rem] text-sm font-bold">
+          <div className="resRatings flex flex-col m-[0.3rem] border-2 border-black rounded-[3px] items-center p-[0.3rem] text-sm font-bold bg-white">
             <span className="starRatings py-2 px-[0.3rem]">
-              {
-                avgRating ? `⭐${avgRating}` : ""
-              }
-            </span>
-            <span className="totalRatings py-2 px-[0.3rem] border-t-[1.5px] border-black">
-              {totalRatings}
+              Ratings: ⭐{avgRating}
             </span>
           </div>
         </div>
@@ -149,7 +144,7 @@ const FoodCard = ({ foodItems, restaurant }) => {
           <div className="offerHeader m-2 pb-4 text-xl font-bold border-b-2 border-black ">Special Offers Available For You</div>
           <div className="offerCarousels my-[0.3rem] mx-0 flex items-center overflow-x-scroll no-scrollbar">
             {
-              offers.map((offer, index) => <div className="offerCarousel border-2 border-black rounded-[3px] m-[0.3rem] mx-auto cursor-pointer hover:bg-black hover:text-white font-bold p-[0.5rem] flex items-center text-nowrap text-center w-auto h-[3rem]" key={index}>{offer}</div>)
+              offers.map((offer, index) => <div className="offerCarousel border-2 border-black rounded-[3px] m-[0.3rem] bg-white mx-auto cursor-pointer hover:bg-black hover:text-white font-bold p-[0.5rem] flex items-center text-nowrap text-center w-auto h-[3rem]" key={index}>{offer}</div>)
             }
           </div>
         </div>
@@ -180,8 +175,8 @@ const FoodCard = ({ foodItems, restaurant }) => {
                                   )}
                                 </div>
                               </div>
-                              <div className="foodDescription text-sm text-left">
-                                {description?.length > 300 ? description.substring(0, 150) : description}
+                              <div className="foodDescription text-[18px] text-left">
+                                {description?.length > 300 ? description.substring(0, 500) + "..." : description}
                               </div>
                             </div>
                             <div className="img_add flex flex-col items-center justify-center relative">
@@ -203,7 +198,7 @@ const FoodCard = ({ foodItems, restaurant }) => {
                                     className="h-[35px] w-[35px] rounded-full cursor-pointer mr-2"
                                     onClick={() => handleDeleteFromCart(foodItem)}
                                   />
-                                  <div className="added flex items-center justify-between my-4 w-full mx-auto cursor-pointer font-bold p-[0.3rem] text-base rounded-[3px] border-black border-2 transition-all duration-100 ease-in-out hover:bg-black hover:text-white cursor-pointer">
+                                  <div className="added flex items-center justify-between my-4 w-full mx-auto cursor-pointer font-bold p-[0.3rem] text-base rounded-[3px] border-black border-2 transition-all bg-white duration-100 ease-in-out hover:bg-black hover:text-white cursor-pointer">
                                     <button className="minus tracking-[0.1rem] bg-transparent py-0 px-1" onClick={() => handleRemoveFromCart(foodItem)}>-</button>
                                     <div className="count font-bold">{getItemCount(foodItem)}</div>
                                     <button className="plus tracking-[0.1rem] bg-transparent py-0 px-1 cursor-pointer" onClick={() => handleAddToCart(foodItem)}>+</button>
@@ -211,7 +206,7 @@ const FoodCard = ({ foodItems, restaurant }) => {
                                 </div>
                               ) : (
                                 <button
-                                  className="add text-center block my-4 mx-auto cursor-pointer font-bold py-[0.425rem] px-2 text-sm w-full rounded-[3px] tracking-[0.1rem] transition-all duration-100 ease-in-out border-black border-2 hover:uppercase"
+                                  className="add text-center bg-white block my-4 mx-auto cursor-pointer font-bold py-[0.425rem] px-2 text-sm w-full rounded-[3px] tracking-[0.1rem] transition-all duration-100 ease-in-out border-black border-2 hover:uppercase"
                                   onClick={() => handleAddToCart(foodItem)}
                                 >
                                   Add
@@ -219,12 +214,12 @@ const FoodCard = ({ foodItems, restaurant }) => {
                               )}
 
                               {isAdmin && (
-                                <div className="adminActions absolute right-[35rem] bottom-0 flex justify-center items-center space-x-4">
-                                  <button className="editBtn transition-all duration-100 ease-in-out border-black border-2 text-black bg-transparent rounded cursor-pointer font-bold py-1 px-3 hover:bg-black hover:text-white"
+                                <div className="adminActions absolute right-[35rem] bottom-3 flex justify-center items-center space-x-4">
+                                  <button className="editBtn bg-white transition-all duration-100 ease-in-out border-black border-2 text-black bg-transparent rounded cursor-pointer font-bold py-1 px-3 hover:bg-black hover:text-white"
                                     onClick={() => handleEditFoodItem(foodItem)}>
                                     Edit
                                   </button>
-                                  <button className="deleteBtn transition-all duration-100 ease-in-out border-black border-2 text-black bg-transparent rounded cursor-pointer font-bold py-1 px-3 hover:bg-black hover:text-white" onClick={() => handleDeleteFoodItem(foodItem.id)}>
+                                  <button className="deleteBtn transition-all bg-white duration-100 ease-in-out border-black border-2 text-black bg-transparent rounded cursor-pointer font-bold py-1 px-3 hover:bg-black hover:text-white" onClick={() => handleDeleteFoodItem(foodItem.id)}>
                                     Delete
                                   </button>
                                 </div>

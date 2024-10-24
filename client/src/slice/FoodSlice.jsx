@@ -91,13 +91,11 @@ export const addOrUpdateFood = (foodItem) => async (dispatch) => {
       const foodDocRef = doc(db, 'foodItems', foodItem.id);
       await updateDoc(foodDocRef, {
         ...foodItem,
-        updatedAt: new Date().toISOString(),
       });
       dispatch(updateFoodItem(foodItem));
     } else {
       const docRef = await addDoc(foodItemRef, {
         ...foodItem,
-        createdAt: new Date().toISOString(),
       });
       dispatch(addFoodItem({ id: docRef.id, ...foodItem }));
     }
@@ -105,7 +103,7 @@ export const addOrUpdateFood = (foodItem) => async (dispatch) => {
     console.error('Error in addOrUpdateFood:', error);
     const errorMessage = error.message || 'Error adding/updating food item';
     dispatch(setError(errorMessage));
-    
+
     throw new Error(errorMessage);
   }
 };
