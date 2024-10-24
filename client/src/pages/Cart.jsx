@@ -255,7 +255,7 @@ const Cart = () => {
                       <div className="formField">
                         <label htmlFor="contactNumber" className="block text-lg font-bold">Contact Number</label>
                         <input
-                          type="tel"
+                          type="number"
                           id="contactNumber"
                           name="contactNumber"
                           className="border-2 border-black p-2 rounded"

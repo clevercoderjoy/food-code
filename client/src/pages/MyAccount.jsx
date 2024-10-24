@@ -71,7 +71,7 @@ const MyAccount = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl mb-4">My Account</h1>
+      <h1 className="text-4xl font-bold mb-4">My Account</h1>
       <div className="mb-6">
         <h2 className="text-xl">User Details</h2>
         <p><strong>Email:</strong> {currentUser?.email}</p>
