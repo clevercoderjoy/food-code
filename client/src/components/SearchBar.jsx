@@ -8,7 +8,7 @@ const SearchBar = () => {
   const searchText = useSelector(selectSearchText)
 
   const handleSearch = (e) => {
-    const searchText = e.target.value.toUpperCase();
+    const searchText = e.target.value.toLowerCase();
     dispatch(setSearchText(searchText));
   };
 
