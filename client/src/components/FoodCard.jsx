@@ -100,7 +100,7 @@ const FoodCard = ({ foodItems, restaurant }) => {
     <>
       <div className="menuContainer my-2 mx-[0.3rem] p-[0.3rem] border-2 border-black rounded-[3px]">
         {cart.length > 0 && (
-          <button className="viewCartButton fixed bottom-1 bg-white text-black right-[11rem] py-[1rem] font-bold px-4 text-center text-lg z-10 font-bold bg-black border-black border-2 hover:uppercase rounded cursor-pointer"
+          <button className="viewCartButton fixed bottom-1 bg-white text-black right-[11rem] py-[1rem] font-bold px-4 text-center text-lg z-10 font-bold bg-black border-black border-2 hover:uppercase hover:bg-black hover:text-white rounded cursor-pointer"
             onClick={() => navigate("/cart")}>
             View Cart ({getTotalCartItems()})
           </button>
