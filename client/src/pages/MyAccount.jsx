@@ -14,9 +14,6 @@ const MyAccount = () => {
   const currentUser = useSelector(selectCurrentUser);
   const [userOrders, setUserOrders] = useState([]);
 
-  console.log("Current User:", currentUser);
-  console.log("User Orders:", userOrders);
-
   const isAdmin = currentUser && currentUser.role === 'admin';
 
   const sortOrdersByStatus = (orders) => {
@@ -55,7 +52,6 @@ const MyAccount = () => {
         });
 
         const sortedOrders = sortOrdersByStatus(orders);
-        console.log("Sorted Orders:", sortedOrders);
         setUserOrders(sortedOrders);
       });
       return () => unsubscribe();

@@ -35,7 +35,6 @@ const RestaurantCard = ({ restaurant }) => {
   }
   const currentUser = useSelector(selectCurrentUser);
   const isAdmin = currentUser?.role === 'admin';
-
   const handleEditClick = () => {
     navigate("/restaurants/addRestaurant", {
       state: { restaurantData: restaurant }

@@ -81,7 +81,6 @@ export const addOrUpdateRestaurant = createAsyncThunk(
 export const deleteRestaurant = createAsyncThunk(
   "/restaurants/deleteRestaurant",
   async (id) => {
-    console.log(id)
     try {
       const restaurantDocRef = doc(db, "restaurants", id);
       await deleteDoc(restaurantDocRef);

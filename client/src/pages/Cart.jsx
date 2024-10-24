@@ -17,6 +17,7 @@ const Cart = () => {
   const currentAddressSelected = useSelector(selectCurrentAddressSelected);
   const isUserLoggedIn = useSelector(selectIsUserLoggedIn);
   const currentUser = useSelector(selectCurrentUser);
+
   const [accordionOpen, setAccordionOpen] = useState([false, false, false, false]);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
 

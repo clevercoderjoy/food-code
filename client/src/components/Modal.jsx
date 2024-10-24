@@ -13,6 +13,7 @@ const Modal = () => {
     confirmPassword: '',
     isAdmin: false,
   });
+
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
