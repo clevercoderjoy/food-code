@@ -80,7 +80,7 @@ const AddFood = () => {
 
 
   return (
-    <div className="adminContainer p-4 m-8 border-2 border-black rounded-lg">
+    <div className="adminContainer p-4 m-8 border-2 border-black rounded-lg bg-white">
       <h2 className="text-2xl font-bold mb-4">
         {editMode ? 'Edit Food Item' : 'Add New Food Item'}
       </h2>

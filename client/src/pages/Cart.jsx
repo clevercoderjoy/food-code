@@ -363,7 +363,7 @@ const Cart = () => {
               content={
                 <div className="cartItems mt-4">
                   {cart.map((item) => (
-                    <div className="cartItemContainer flex justify-between items-center border-black border-2 py-[0.3rem] px-2 rounded-[3px] mt-3 h-[5rem] text-lg gap-5" key={item?.id}>
+                    <div className="cartItemContainer flex justify-between items-center py-[0.3rem] px-2 rounded-[3px] mt-3 h-[5rem] text-lg gap-5" key={item?.id}>
                       <div className="cartItemName w-[300px] font-bold text-left text-xl">{item?.name}</div>
                       <div className="flex items-center justify-center gap-8">
                         <div className="cartItemQuantityButtons flex gap-6 font-bold border-black border-2 px-4 py-1 rounded-[3px] my-2 bg-white">

@@ -159,7 +159,7 @@ const FoodCard = ({ foodItems, restaurant }) => {
                       {food.items.map((foodItem, index) => {
                         const { description, image, name, type, price } = foodItem;
                         return (
-                          <div className="foodItem border-2 rounded-[3px] mt-2 mx-auto p-[0.3rem] flex items-start justify-between relative" key={index}>
+                          <div className="foodItem rounded-[3px] mt-3 mx-auto p-[0.3rem] flex items-start justify-between relative" key={index}>
                             <div className="foodDetails w-full p-[0.1rem] my-2 mx-0">
                               <div className="foodName font-bold text-lg text-left">{name}</div>
                               <div className="isVeg_price flex justify-between items-center">
