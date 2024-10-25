@@ -41,8 +41,7 @@ const Cart = () => {
 
   const getTotalCartAmount = () => {
     return cart.reduce((total, item) => {
-      const itemPrice = item.price;
-      return total + (itemPrice * item.quantity);
+      return total + (item.price * item.quantity);
     }, 0);
   };
 

@@ -54,7 +54,7 @@ const FoodCard = ({ foodItems, restaurant }) => {
     const currentCount = getItemCount(foodItem);
     if (currentCount < 3) {
       dispatch(addToCart({
-        resId: restaurant.id || restaurant.info.name.toLowerCase(),
+        resId: restaurant.id,
         foodItem
       }));
       toast.success(`${foodItem.name} added to cart!`);
@@ -90,7 +90,7 @@ const FoodCard = ({ foodItems, restaurant }) => {
         editMode: true,
         foodItem: {
           ...foodItem,
-          restaurantId: restaurant.id || `${restaurant.info.name}`.replace(/\s+/g, '-').toLowerCase()
+          restaurantId: restaurant.id
         }
       }
     });
@@ -176,7 +176,7 @@ const FoodCard = ({ foodItems, restaurant }) => {
                                 </div>
                               </div>
                               <div className="foodDescription text-[18px] text-left">
-                                {description?.length > 300 ? description.substring(0, 500) + "..." : description}
+                                {description?.length > 300 ? description.substring(0, 300) + "..." : description}
                               </div>
                             </div>
                             <div className="img_add flex flex-col items-center justify-center relative">
