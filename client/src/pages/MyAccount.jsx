@@ -25,8 +25,8 @@ const MyAccount = () => {
     };
 
     return orders.sort((a, b) => {
-      const statusA = statusPriority[a.status] || 5;
-      const statusB = statusPriority[b.status] || 5;
+      const statusA = statusPriority[a.status];
+      const statusB = statusPriority[b.status];
       return statusA - statusB;
     });
   };
@@ -45,7 +45,7 @@ const MyAccount = () => {
         return;
       }
 
-      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const subscribe = onSnapshot(q, (querySnapshot) => {
         const orders = [];
         querySnapshot.forEach((doc) => {
           orders.push({ id: doc.id, ...doc.data() });
@@ -54,7 +54,7 @@ const MyAccount = () => {
         const sortedOrders = sortOrdersByStatus(orders);
         setUserOrders(sortedOrders);
       });
-      return () => unsubscribe();
+      return () => subscribe();
     };
 
     fetchOrders();

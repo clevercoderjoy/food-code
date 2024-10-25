@@ -9,8 +9,6 @@ const firebaseConfig = {
   authDomain: "food-code-4fa90.firebaseapp.com",
   projectId: "food-code-4fa90",
   storageBucket: "food-code-4fa90.appspot.com",
-  messagingSenderId: "14653731588",
-  appId: "1:14653731588:web:2e3851990addc883fa5651"
 };
 
 // Initialize Firebase

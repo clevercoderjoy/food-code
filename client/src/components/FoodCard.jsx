@@ -111,9 +111,7 @@ const FoodCard = ({ foodItems, restaurant }) => {
               {name}
             </span>
             <span className="resCuisines text-lg">
-              {
-                cuisines.join(", ")
-              }
+              {cuisines.join(", ")}
             </span>
             <span className="resArea text-base">
               {areaName}
@@ -176,7 +174,7 @@ const FoodCard = ({ foodItems, restaurant }) => {
                                 </div>
                               </div>
                               <div className="foodDescription text-[18px] text-left">
-                                {description?.length > 300 ? description.substring(0, 300) + "..." : description}
+                                {description?.length > 200 ? description.substring(0, 200) + "..." : description}
                               </div>
                             </div>
                             <div className="img_add flex flex-col items-center justify-center relative">
@@ -186,7 +184,7 @@ const FoodCard = ({ foodItems, restaurant }) => {
                                   src={
                                     image
                                       ? food_img_url + image
-                                      : "https://www.pngkey.com/png/full/114-1144514_foodlogo-question-mark-food-question-mark-png.png"
+                                      : "https://webdesignretainer.com/wp-content/uploads/2018/06/Red-alert-404-design-1024x455.png"
                                   }
                                   alt="food image"
                                 />

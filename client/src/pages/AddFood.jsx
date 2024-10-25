@@ -59,6 +59,7 @@ const AddFood = () => {
 
     if (editMode) {
       foodItem.id = existingFood.id;
+      navigate(-1);
     }
 
     try {
@@ -119,7 +120,6 @@ const AddFood = () => {
             placeholder="Enter food image ID"
             value={formData.foodImage}
             onChange={handleChange}
-            required
             className="border-2 border-gray-300 rounded p-2 w-full"
           />
         </div>

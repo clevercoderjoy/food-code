@@ -25,7 +25,7 @@ const RestaurantCard = ({ restaurant }) => {
   const dispatch = useDispatch();
 
   const cuisine = cuisines.length < 2
-    ? cuisines.map((cuisine) => `${cuisine} `).join("")
+    ? cuisines.map((cuisine) => `${cuisine} `).join(", ")
     : showEllipsis(cuisines.join(", "), 2);
 
   const openRestaurantMenu = () => {
@@ -35,13 +35,13 @@ const RestaurantCard = ({ restaurant }) => {
   }
   const currentUser = useSelector(selectCurrentUser);
   const isAdmin = currentUser?.role === 'admin';
-  const handleEditClick = () => {
+  const handleEditRestaurantClick = () => {
     navigate("/restaurants/addRestaurant", {
       state: { restaurantData: restaurant }
     });
   };
 
-  const handleEditMenuClick = () => {
+  const handleEditFoodMenuClick = () => {
     navigate("/restaurants/addFood", {
       state: { restaurant: restaurant, editMode: false, }
     });
@@ -58,7 +58,7 @@ const RestaurantCard = ({ restaurant }) => {
     <div className="restaurantContainer w-[240px] h-[375px] mt-4 mx-2 mb-4 rounded-lg border-2 border-black shadow-md transition-transform duration-200 ease-in-out relative hover:scale-105 cursor-pointer">
       {isAdmin && (
         <>
-          <div className="relative" onClick={handleEditClick}>
+          <div className="relative" onClick={handleEditRestaurantClick}>
             <div className="absolute top-0 left-0 z-10 bg-white p-4 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-200 group">
               <FaPen className="text-gray-700 hover:text-gray-900 cursor-pointer" />
               <span className="absolute left-0 top-[-18px] transform -translate-y-1/2 whitespace-nowrap bg-black text-white text-sm p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -75,7 +75,7 @@ const RestaurantCard = ({ restaurant }) => {
             </div>
           </div>
           <div className="relative">
-            <div className="absolute top-0 right-0 z-10 bg-white p-4 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-200 group" onClick={handleEditMenuClick}>
+            <div className="absolute top-0 right-0 z-10 bg-white p-4 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-200 group" onClick={handleEditFoodMenuClick}>
               <IoFastFood className="text-gray-700 hover:text-gray-900 cursor-pointer" />
               <span className="absolute left-0 top-[-18px] transform -translate-y-1/2 whitespace-nowrap bg-black text-white text-sm p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 Edit Food Menu
@@ -86,7 +86,7 @@ const RestaurantCard = ({ restaurant }) => {
       )}
       <div className="restaurantImgContainer m-auto text-center p-2">
         <img
-          src={CDN_URL + cloudinaryImageId || cloudinaryImageId}
+          src={CDN_URL + cloudinaryImageId || "https://www.pngkey.com/png/full/114-1144514_foodlogo-question-mark-food-question-mark-png.png"}
           alt="food-image"
           className="restaurantImg w-full object-cover h-[160px] rounded-lg"
         />

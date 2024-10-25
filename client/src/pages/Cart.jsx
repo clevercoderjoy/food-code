@@ -98,7 +98,6 @@ const Cart = () => {
           name: currentRestaurant.info.name,
           address: currentRestaurant.info.address
         },
-        orderDate: new Date().toISOString(),
         status: 'placed'
       };
 

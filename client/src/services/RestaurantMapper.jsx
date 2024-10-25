@@ -5,7 +5,7 @@ import { selectRestaurantsLoading } from "../slice/RestaurantsSlice";
 import { selectCurrentUser } from "../slice/UserSlice";
 import AddCard from "../components/AddCard";
 
-const RestaurantMapper = ({ restaurants }) => {
+const RestaurantMapper = ({ restaurants, currentPage }) => {
   const shimmerCardCount = Array.from({ length: 12 }, () => "");
   const restaurantsLoading = useSelector(selectRestaurantsLoading);
   const currentUser = useSelector(selectCurrentUser);
@@ -16,7 +16,7 @@ const RestaurantMapper = ({ restaurants }) => {
           shimmerCardCount.map((_, index) => <ShimmerHome key={index} />)
         ) : (
           <>
-            {currentUser?.role === 'admin' && <AddCard />}
+            {currentUser?.role === 'admin' && currentPage === 1 && <AddCard />}
             {restaurants?.length > 0 ? (
               restaurants.map((restaurant, index) => (
                 <RestaurantCard key={index} restaurant={restaurant} />

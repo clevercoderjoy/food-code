@@ -5,7 +5,6 @@ import { toast } from "react-toastify";
 import { selectCart } from "../slice/CartSlice";
 import {
   clearUserDetails,
-  selectCurrentUser,
   selectIsUserLoggedIn,
   setIsUserLoggedIn,
   setShowModal,
@@ -24,7 +23,6 @@ const Header = ({ cartItems }) => {
   });
   const cart = useSelector(selectCart);
   const dispatch = useDispatch();
-  const currentUser = useSelector(selectCurrentUser);
   const isUserLoggedIn = useSelector(selectIsUserLoggedIn);
   const showOptions = isOptionsVisible ? "visible" : "hidden";
   const navigate = useNavigate();
@@ -48,7 +46,6 @@ const Header = ({ cartItems }) => {
           dispatch(setCurrentUser({
             email: user.email,
             uid: user.uid,
-            username: userData.username,
             role: userData.role,
           }));
         }
@@ -103,6 +100,7 @@ const Header = ({ cartItems }) => {
       dispatch(setIsUserLoggedIn(false));
       setOptionsVisible(false);
       dispatch(setCurrentAddressSelected([]));
+      setCurrentUser({});
       toast.warn("User logged out successfully.");
     } catch (error) {
       toast.error("Error logging out:", error);
@@ -145,7 +143,6 @@ const Header = ({ cartItems }) => {
               className={`${showOptions} authOptions border-t-0 h-auto py-1 pl-1 absolute top-[40px] w-52 right-[-2px] bg-white border-black border-2 shadow-lg transition-all duration-200 ease-in-out`}
               onMouseLeave={handleAuthLeave}
             >
-              <span className={`autoOption ${autOptionClass}`}>{currentUser?.username}</span>
               <span className={`autoOption ${autOptionClass}`} onClick={() => navigate("/myAccount")}>My Account</span>
               <span className={`autoOption ${autOptionClass}`} onClick={handleAuth}>Log Out</span>
             </div>
