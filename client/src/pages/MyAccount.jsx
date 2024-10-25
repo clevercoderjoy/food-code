@@ -73,7 +73,7 @@ const MyAccount = () => {
     <div className="p-4">
       <h1 className="text-4xl font-bold mb-4">My Account</h1>
       <div className="mb-6">
-        <h2 className="text-xl">User Details</h2>
+        <h2 className="text-xl">{currentUser && currentUser.role === "admin" ? "Admin" : "User"} Details</h2>
         <p><strong>Email:</strong> {currentUser?.email}</p>
         <p><strong>User ID:</strong> {currentUser?.uid}</p>
       </div>
