@@ -51,7 +51,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "myAccount",
-        element: <AdminRoute element={<MyAccount />} />
+        element: <MyAccount />
       },
       {
         path: "*",

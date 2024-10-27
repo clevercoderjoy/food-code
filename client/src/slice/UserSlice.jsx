@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import app from "../firebase/config";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
 
 const db = getFirestore(app);
 
@@ -19,12 +19,21 @@ const getUserFromFirestore = async (uid) => {
   return null;
 };
 
+export const deleteUser = createAsyncThunk(
+  'user/deleteUser',
+  async (uid) => {
+    const userRef = doc(db, 'users', uid);
+    await deleteDoc(userRef);
+    return uid;
+  }
+);
+
 export const signUp = createAsyncThunk(
   'user/signUp',
   async ({ email, password, isAdmin }, { dispatch }) => {
     const auth = getAuth(app);
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    
+
     const userData = {
       email: userCredential.user.email,
       uid: userCredential.user.uid,
@@ -48,9 +57,9 @@ export const logIn = createAsyncThunk(
   async ({ email, password }, { dispatch }) => {
     const auth = getAuth(app);
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    
+
     const userData = await getUserFromFirestore(userCredential.user.uid);
-    
+
     if (!userData) {
       throw new Error('User data not found');
     }
