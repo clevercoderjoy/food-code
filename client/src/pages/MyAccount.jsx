@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateOrderStatus } from '../slice/OrderSlice';
-import { selectCurrentUser } from "../slice/UserSlice";
+import { selectCurrentUser, updateUserRole } from "../slice/UserSlice";
 import { toast } from 'react-toastify';
 import { collection, onSnapshot, query, where, deleteDoc, doc } from 'firebase/firestore';
 import app from '../firebase/config';
@@ -105,6 +105,19 @@ const MyAccount = () => {
     }
   };
 
+  const handleUpdateRole = async (userId, newRole) => {
+    if (userId === currentUser?.uid) {
+      toast.error('You cannot update your own role.');
+      return;
+    }
+    try {
+      await dispatch(updateUserRole({ userId, role: newRole })).unwrap();
+      toast.success('User role updated successfully');
+    } catch (error) {
+      toast.error('Failed to update user role: ' + error);
+    }
+  };
+
   return (
     <div className={`p-4 ${!isAdmin ? 'flex flex-col items-center' : ''}`}>
       <h1 className="text-4xl font-bold mb-4 text-center">My Account</h1>
@@ -154,7 +167,17 @@ const MyAccount = () => {
                     <div className="text-left">
                       <p><strong>Email:</strong> {user.email}</p>
                       <p><strong>User ID:</strong> {user.uid}</p>
-                      <p><strong>Role:</strong> <strong>{user.role}</strong></p>
+                      <div className='flex items-center justify-between'>
+                        <p><strong>Role:</strong> <strong>{user.role}</strong></p>
+                        <select
+                          value={user.role}
+                          onChange={(e) => handleUpdateRole(user.id, e.target.value)}
+                          className="ml-4 p-1 border rounded"
+                        >
+                          <option value="user">User</option>
+                          <option value="admin">Admin</option>
+                        </select>
+                      </div>
                     </div>
                     <button
                       onClick={() => handleDeleteUser(user.id)}

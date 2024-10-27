@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import app from "../firebase/config";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { getFirestore, doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, getDoc, deleteDoc, updateDoc } from 'firebase/firestore';
 
 const db = getFirestore(app);
 
@@ -9,6 +9,7 @@ const initialState = {
   currentUser: JSON.parse(localStorage.getItem('currentUser')) || null,
   isUserLoggedIn: JSON.parse(localStorage.getItem('isUserLoggedIn')) || false,
   showModal: false,
+  users: [],
 };
 
 const getUserFromFirestore = async (uid) => {
@@ -80,6 +81,20 @@ export const logIn = createAsyncThunk(
   }
 );
 
+export const updateUserRole = createAsyncThunk(
+  'user/updateUserRole',
+  async ({ userId, role }) => {
+    try {
+      const userDoc = doc(db, 'users', userId);
+      await updateDoc(userDoc, { role });
+      return { userId, role };
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+);
+
+
 const userSlice = createSlice({
   name: 'user',
   initialState,
@@ -102,6 +117,18 @@ const userSlice = createSlice({
       state.showModal = action.payload;
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(updateUserRole.fulfilled, (state, action) => {
+        const { userId, role } = action.payload;
+        if (state.users) {
+          const user = state.users.find((u) => u.id === userId);
+          if (user) {
+            user.role = role;
+          }
+        }
+      })
+  }
 });
 
 export const { setCurrentUser, setIsUserLoggedIn, clearUserDetails, setShowModal } = userSlice.actions;

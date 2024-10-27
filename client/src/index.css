@@ -15,7 +15,10 @@ body {
   background: radial-gradient(circle at 10% 20%, rgba(255, 182, 193, 0.7) 0.1%, rgba(173, 216, 230, 0.6) 50%, rgba(211, 211, 211, 0.7) 100%);
 }
 
-input, textarea {
+input,
+textarea,
+option,
+select {
   background: linear-gradient(135deg, #f9f9f9, #e6e6e6);
 
 }
