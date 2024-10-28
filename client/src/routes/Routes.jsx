@@ -10,6 +10,7 @@ import AddRestaurant from "../pages/AddRestaurant";
 import AddFood from "../pages/AddFood";
 import AdminRoute from "./AdminRoutes";
 import MyAccount from "../pages/MyAccount";
+import RequireAuth from "../services/RequireAuth";
 
 export const router = createBrowserRouter([
   {
@@ -51,7 +52,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "myAccount",
-        element: <MyAccount />
+        element: (
+          <RequireAuth>
+            <MyAccount />
+          </RequireAuth>
+        ),
       },
       {
         path: "*",
