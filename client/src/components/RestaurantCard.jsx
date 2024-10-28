@@ -55,7 +55,7 @@ const RestaurantCard = ({ restaurant }) => {
   }
 
   return (
-    <div className="restaurantContainer w-[240px] h-[375px] mt-4 mx-2 mb-4 rounded-lg border-2 border-black shadow-md transition-transform duration-200 ease-in-out relative hover:scale-105 cursor-pointer">
+    <div className="restaurantContainer w-[240px] h-[375px] mt-4 mx-2 mb-4 rounded-lg border-2 border-black shadow-md transition-transform duration-200 ease-in-out relative hover:scale-105">
       {isAdmin && (
         <>
           <div className="relative" onClick={handleEditRestaurantClick}>
