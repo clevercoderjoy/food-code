@@ -21,8 +21,27 @@ const Modal = () => {
     setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
   };
 
+  const validateEmail = (email) => {
+    if (/^[0-9]/.test(email)) {
+      return 'Email cannot start with a number';
+    }
+
+    const emailRegex = /^[a-zA-Z][a-zA-Z0-9._-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) {
+      return 'Please enter a valid email address';
+    }
+
+    return null;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const emailError = validateEmail(formData.email);
+    if (emailError) {
+      toast.error(emailError);
+      return;
+    }
 
     if (!isLogin) {
       if (formData.password !== formData.confirmPassword) {
